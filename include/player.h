@@ -4,6 +4,7 @@
 #include <map.h>
 #include <monster.h>
 #include <constant.h>
+#include <bomb.h>
 
 struct player;
 
@@ -32,6 +33,9 @@ int player_is_inv(struct player* player);
 
 // Return the boolean corresponding to the player visibility
 short player_is_vis(struct player* player);
+
+// Return a fresh bomb
+struct bomb* create_bomb(struct map* map, struct bomb* previous, struct player* player);
 
 // Decrease life player depending if (s)he is in the same cell as a monster
 void player_on_monster(struct player* player, struct monster* monster, struct map* map);

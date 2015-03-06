@@ -88,6 +88,15 @@ short player_is_vis(struct player* player) {
 	return player->visible;
 }
 
+struct bomb* create_bomb(struct map* map, struct bomb* previous, struct player* player) {
+	if (player->nb_bomb > 0) {
+		map_set_cell_type(map, player->x, player->y, CELL_BOMB);
+		return bomb_init(player->x, player->y, previous);
+	}
+	else
+		return previous;
+}
+
 void player_on_monster(struct player* player, struct monster* monster, struct map* map) {
 
 	if (is_there_a_monster_here(monster, player_get_x(player), player_get_y(player), map) != 0)
@@ -139,9 +148,16 @@ static int player_move_aux(struct player* player, struct map* map, int x, int y)
 		break;
 
 	case CELL_MONSTER:
+		// When the player can't die, we're not letting him going through monsters
+		if (player->invincibility > 0)
+			return 0;
 		break;
 
 	case CELL_PLAYER:
+		break;
+
+	case CELL_BOMB:
+		return 0;
 		break;
 
 	default:
@@ -188,7 +204,10 @@ int player_move(struct player* player, struct map* map) {
 	}
 
 	if (move) {
-		map_set_cell_type(map, x, y, CELL_EMPTY);
+
+		if (map_get_cell_type(map, x, y) == CELL_PLAYER)
+			map_set_cell_type(map, x, y, CELL_EMPTY);
+
 		map_set_cell_type(map, player->x, player->y, CELL_PLAYER);
 	}
 

@@ -10,6 +10,7 @@ struct game {
 	struct level* curr_level; // current level
 	struct player* player;
 	struct monster* monster;
+	struct bomb* bomb;
 	short pause;
 	short counter;
 };
@@ -22,6 +23,7 @@ struct game* game_new(void) {
 
 	game->player = player_init(1);
 	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
+	game->bomb = NULL;
 	player_from_map(game->player, level_get_map(game->curr_level, 0)); // get x,y of the player on the first map
 
 	game->pause = 0;
@@ -83,6 +85,7 @@ void game_display(struct game* game) {
 
 	game_banner_display(game);
 	level_display(game_get_curr_level(game));
+	bombs_display(game->bomb);
 	if (player_is_vis(game->player))
 		player_display(game->player);
 	monsters_display(game->monster);
@@ -141,6 +144,7 @@ short input_keyboard(struct game* game) {
 						move = player_move(player, map);
 						break;
 					case SDLK_SPACE:
+						game->bomb = create_bomb(level_get_map(game->curr_level, 0), game->bomb, game->player);
 						break;
 					default:
 						break;
@@ -184,6 +188,8 @@ int game_update(struct game* game) {
 
 	// Updating player
 	player_update(level_get_map(game->curr_level, 0), game->player);
+	// Updating bombs
+	bombs_update(level_get_map(game->curr_level, 0), game->bomb);
 
 	return 0;
 }

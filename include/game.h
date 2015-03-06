@@ -3,6 +3,7 @@
 
 #include <player.h>
 #include <monster.h>
+#include <bomb.h>
 #include <level.h>
 
 // Abstract data type

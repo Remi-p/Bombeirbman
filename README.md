@@ -2,6 +2,21 @@
 
 ## Modifications
 
+### 06.03.15
+
+* *include/constant.h*
+* *include/monster.h*
+* *include/player.h*
+* *src/game.c*
+	* Blinking of the player when hit (`game_display`)
+	* Calling function `player_on_monster` for collision with monster
+* *src/monster.c*
+	* 'Force' functionnality for moving a monster in any case
+	* Adding a function for checking if a case is occupied by a monster, and moving it
+* *src/player.c*
+	* Support for invincibility & visibility (blinking)
+	* Adding a fuction for updating part of the player every frame
+
 ### Before 05.03.15
 
 * *include/constant.h*

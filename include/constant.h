@@ -18,9 +18,11 @@
 #define MAP_HEIGHT 12
 
 // Life of the player
-#define LIFE 2
-// Invincibility timed
+#define LIFE 8
+// Invincibility time
 #define INVINCIBILITY 50
+// Bomb time
+#define BOMB 100
 
 enum direction {
 	NORTH = 0,
