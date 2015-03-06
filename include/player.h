@@ -2,6 +2,7 @@
 #define PLAYER_H_
 
 #include <map.h>
+#include <monster.h>
 #include <constant.h>
 
 struct player;
@@ -26,6 +27,15 @@ void player_dec_nb_bomb(struct player * player);
 short player_get_life(struct player * player);
 void player_dec_life(struct player * player);
 
+// Return the time of invicibility remaining for the player
+int player_is_inv(struct player* player);
+
+// Return the boolean corresponding to the player visibility
+short player_is_vis(struct player* player);
+
+// Decrease life player depending if (s)he is in the same cell as a monster
+void player_on_monster(struct player* player, struct monster* monster, struct map* map);
+
 // Load the player position from the map
 void player_from_map(struct player* player, struct map* map);
 
@@ -34,5 +44,8 @@ int player_move(struct player* player, struct map* map);
 
 // Display the player on the screen
 void player_display(struct player* player);
+
+// Updating the player in the FPS rate
+void player_update(struct map* map, struct player* player);
 
 #endif /* PLAYER_H_ */

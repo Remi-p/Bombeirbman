@@ -12,6 +12,8 @@ struct player {
 	enum direction current_direction;
 	int nb_bomb;
 	short life;
+	int invincibility;
+	short visible; // Used for making the player blinked
 };
 
 struct player* player_init(int bomb_number) {
@@ -22,6 +24,8 @@ struct player* player_init(int bomb_number) {
 	player->current_direction = SOUTH;
 	player->nb_bomb = bomb_number;
 	player->life = LIFE;
+	player->invincibility = 0;
+	player->visible = 1;
 
 	return player;
 }
@@ -68,7 +72,27 @@ short player_get_life(struct player* player) {
 
 void player_dec_life(struct player* player) {
 	assert(player);
-	player->life -= 1;
+	if (player->invincibility <= 0) {
+		player->life -= 1;
+		player->invincibility = INVINCIBILITY;
+	}
+}
+
+int player_is_inv(struct player* player) {
+	assert(player);
+	return player->invincibility;
+}
+
+short player_is_vis(struct player* player) {
+	assert(player);
+	return player->visible;
+}
+
+void player_on_monster(struct player* player, struct monster* monster, struct map* map) {
+
+	if (is_there_a_monster_here(monster, player_get_x(player), player_get_y(player), map) != 0)
+		player_dec_life(player);
+
 }
 
 void player_from_map(struct player* player, struct map* map) {
@@ -167,6 +191,7 @@ int player_move(struct player* player, struct map* map) {
 		map_set_cell_type(map, x, y, CELL_EMPTY);
 		map_set_cell_type(map, player->x, player->y, CELL_PLAYER);
 	}
+
 	return move;
 }
 
@@ -176,3 +201,15 @@ void player_display(struct player* player) {
 			player->x * SIZE_BLOC, player->y * SIZE_BLOC);
 }
 
+void player_update(struct map* map, struct player* player) {
+	if (player->visible == 0) {
+		player->visible = 1;
+	}
+	else if (player->invincibility > 0) {
+		player->visible = 0;
+	}
+
+	if (player->invincibility > 0) {
+		player->invincibility--;
+	}
+}

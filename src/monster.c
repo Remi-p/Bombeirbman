@@ -109,7 +109,7 @@ static int monster_move_aux(struct monster* monster, struct map* map, int x, int
 	return 1;
 }
 
-void monster_move(struct monster* monster, struct map* map) {
+void monster_move(struct monster* monster, struct map* map, short force) {
 	int x = monster->x;
 	int y = monster->y;
 	int move = 0;
@@ -148,12 +148,12 @@ void monster_move(struct monster* monster, struct map* map) {
 		map_set_cell_type(map, x, y, CELL_EMPTY);
 		map_set_cell_type(map, monster->x, monster->y, CELL_MONSTER);
 	}
-	/*
-	else {
-		// If it was blocked, we try to turn
+
+	else if (force) {
+		// If "force" is used, we keep moving
 		monster->current_direction = (monster->current_direction + 1) % 4;
-		monster_move(monster, map);
-	}*/
+		monster_move(monster, map, 1);
+	}
 }
 
 void monsters_move(struct monster* monster, struct map* map) {
@@ -163,10 +163,23 @@ void monsters_move(struct monster* monster, struct map* map) {
 
 	while(monster != NULL) {
 		monster->current_direction = rand() % 4;
-		monster_move(monster, map);
+		monster_move(monster, map, 0);
 		monster = monster->next;
 	}
 
+}
+
+short is_there_a_monster_here(struct monster* monster, int x, int y, struct map* map) {
+
+	while(monster != NULL) {
+		if (monster->x == x && monster->y == y) {
+			monster_move(monster, map, 1);
+			return 1;
+		}
+		monster = monster->next;
+	}
+
+	return 0;
 }
 
 void monster_display(struct monster* monster) {

@@ -19,6 +19,8 @@
 
 // Life of the player
 #define LIFE 2
+// Invincibility timed
+#define INVINCIBILITY 50
 
 enum direction {
 	NORTH = 0,

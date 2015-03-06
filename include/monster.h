@@ -21,10 +21,14 @@ void monster_set_current_way(struct monster * monster, enum direction direction)
 struct monster* monsters_from_map(struct map* map);
 
 // Move one monster according to the direction
-void monster_move(struct monster* monster, struct map* map);
+void monster_move(struct monster* monster, struct map* map, short force);
 
 // Move all the monsters
 void monsters_move(struct monster* monster, struct map* map);
+
+// Return 1 if there is a monster, 0 otherwise.
+// Also move the monster from the cell.
+short is_there_a_monster_here(struct monster* monster, int x, int y, struct map* map);
 
 // Display one monster on the screen
 void monster_display(struct monster* monster);

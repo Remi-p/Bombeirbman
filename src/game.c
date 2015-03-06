@@ -83,7 +83,8 @@ void game_display(struct game* game) {
 
 	game_banner_display(game);
 	level_display(game_get_curr_level(game));
-	player_display(game->player);
+	if (player_is_vis(game->player))
+		player_display(game->player);
 	monsters_display(game->monster);
 
 	window_refresh();
@@ -93,6 +94,7 @@ short input_keyboard(struct game* game) {
 	SDL_Event event;
 	struct player* player = game_get_player(game);
 	struct map* map = level_get_curr_map(game_get_curr_level(game));
+	int move = 0;
 
 	while (SDL_PollEvent(&event)) {
 
@@ -124,19 +126,19 @@ short input_keyboard(struct game* game) {
 						return 0;
 					case SDLK_UP:
 						player_set_current_way(player, NORTH);
-						player_move(player, map);
+						move = player_move(player, map);
 						break;
 					case SDLK_DOWN:
 						player_set_current_way(player, SOUTH);
-						player_move(player, map);
+						move = player_move(player, map);
 						break;
 					case SDLK_RIGHT:
 						player_set_current_way(player, EAST);
-						player_move(player, map);
+						move = player_move(player, map);
 						break;
 					case SDLK_LEFT:
 						player_set_current_way(player, WEST);
-						player_move(player, map);
+						move = player_move(player, map);
 						break;
 					case SDLK_SPACE:
 						break;
@@ -148,6 +150,12 @@ short input_keyboard(struct game* game) {
 			}
 		}
 	}
+
+	// If we moved, we need to check if player & monsters are in the same cell
+	if (move > 0) {
+		player_on_monster(player, game->monster, level_get_map(game->curr_level, 0));
+	}
+
 	return 0;
 }
 
@@ -156,7 +164,7 @@ int game_update(struct game* game) {
 	if (input_keyboard(game))
 		return 1; // exit game
 
-	// Incrementing the counter
+	// Incrementing the counter for monster moves
 	game->counter++;
 
 	if (game->counter > 15) {
@@ -165,9 +173,17 @@ int game_update(struct game* game) {
 
 		// We're not stopped : let's move some monsters
 		if (game->pause != 1) {
+
 			monsters_move(game->monster, level_get_curr_map(game->curr_level));
+
+			// We also call this function in input_keyboard if the player moved
+			player_on_monster(game->player, game->monster, level_get_map(game->curr_level, 0));
+
 		}
 	}
+
+	// Updating player
+	player_update(level_get_map(game->curr_level, 0), game->player);
 
 	return 0;
 }
