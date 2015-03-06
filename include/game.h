@@ -2,6 +2,7 @@
 #define GAME_H_
 
 #include <player.h>
+#include <monster.h>
 #include <level.h>
 
 // Abstract data type

@@ -10,6 +10,12 @@
 #define MAP_DOOR		"sprite/door.png"
 #define MAP_CLOSED_DOOR	"sprite/closed_door.png"
 
+// Monsters
+#define MNST_LEFT     "sprite/monster_left.png"
+#define MNST_UP       "sprite/monster_up.png"
+#define MNST_RIGHT    "sprite/monster_right.png"
+#define MNST_DOWN     "sprite/monster_down.png"
+
 // Scenery elements
 #define MAP_STONE		"sprite/stone.png"
 #define MAP_TREE        "sprite/tree.png"
@@ -63,6 +69,7 @@ SDL_Surface* door;
 SDL_Surface* closed_door;
 SDL_Surface* stone;
 SDL_Surface* tree;
+SDL_Surface* monster_img[4];
 
 // bonus
 #define NB_BONUS 4
@@ -148,11 +155,24 @@ void player_unload() {
 		SDL_FreeSurface(player_img[i]);
 }
 
+void monster_load() {
+	monster_img[WEST] = load_image(MNST_LEFT);
+	monster_img[EAST] = load_image(MNST_RIGHT);
+	monster_img[NORTH] = load_image(MNST_UP);
+	monster_img[SOUTH] = load_image(MNST_DOWN);
+}
+
+void monster_unload() {
+	for (int i = 0; i < 4; i++)
+		SDL_FreeSurface(monster_img[i]);
+}
+
 void sprite_load() {
 	map_load();
 	bonus_load();
 	banner_load();
 	player_load();
+	monster_load();
 }
 
 void sprite_free() {
@@ -160,6 +180,7 @@ void sprite_free() {
 	bonus_unload();
 	banner_unload();
 	player_unload();
+	monster_unload();
 }
 
 SDL_Surface* sprite_get_number(short number) {
@@ -170,6 +191,11 @@ SDL_Surface* sprite_get_number(short number) {
 SDL_Surface* sprite_get_player(enum direction direction) {
 	assert(player_img[direction]);
 	return player_img[direction];
+}
+
+SDL_Surface* sprite_get_monster(enum direction direction) {
+	assert(monster_img[direction]);
+	return monster_img[direction];
 }
 
 SDL_Surface* sprite_get_banner_life() {

@@ -17,6 +17,9 @@
 #define MAP_WIDTH  12
 #define MAP_HEIGHT 12
 
+// Life of the player
+#define LIFE 2
+
 enum direction {
 	NORTH = 0,
 	SOUTH, // 1

@@ -45,6 +45,12 @@ struct map* map_new(int width, int height)
 int map_is_inside(struct map* map, int x, int y)
 {
 	assert(map);
+
+	// Exceeding grid limit
+	if (x > (map->width - 1) || y > (map->height - 1) || x < 0 || y < 0) {
+		return 0;
+	}
+
 	return 1;
 }
 
@@ -147,6 +153,9 @@ void map_display(struct map* map)
 			case CELL_CLOSED_DOOR:
 				window_display_image(sprite_get_closed_door(), x, y);
 				break;
+			case CELL_MONSTER:
+				//window_display_image(sprite_get_monster(SOUTH), x, y);
+				break;
 			}
 		}
 
@@ -176,4 +185,79 @@ struct map* map_get_default(void)
 		map->grid[i] = themap[i];
 
 	return map;
+}
+
+static int case_move_aux(struct map* map, int x, int y) {
+
+	if (!map_is_inside(map, x, y))
+		return 0;
+
+	switch (map_get_cell_type(map, x, y)) {
+	case CELL_SCENERY:
+		// On refuse le déplacement de la caisse
+		return 0;
+		break;
+
+	case CELL_CASE:
+		return 0;
+		break;
+
+	case CELL_BONUS:
+		break;
+
+	case CELL_GOAL:
+		break;
+
+	case CELL_MONSTER:
+		return 0;
+		break;
+
+	case CELL_PLAYER:
+		break;
+
+	default:
+		break;
+	}
+
+	// Case can be moved
+	return 1;
+}
+
+int case_move(enum direction current_dir, int x, int y, struct map* map) {
+
+	// int prev_x = x;
+	// int prev_y = y;
+	int move = 0;
+
+	switch (current_dir) {
+	case NORTH:
+		if (case_move_aux(map, x, --y)) {
+			move = 1;
+		}
+		break;
+
+	case SOUTH:
+		if (case_move_aux(map, x, ++y)) {
+			move = 1;
+		}
+		break;
+
+	case WEST:
+		if (case_move_aux(map, --x, y)) {
+			move = 1;
+		}
+		break;
+
+	case EAST:
+		if (case_move_aux(map, ++x, y)) {
+			move = 1;
+		}
+		break;
+	}
+
+	if (move) {
+		map_set_cell_type(map, x, y, CELL_CASE);
+		// map_set_cell_type(map, prev_x, prev_y, CELL_EMPTY); // Will be replaced by player
+	}
+	return move;
 }

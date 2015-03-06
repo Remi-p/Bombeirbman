@@ -22,6 +22,10 @@ int  player_get_nb_bomb(struct player * player);
 void player_inc_nb_bomb(struct player * player);
 void player_dec_nb_bomb(struct player * player);
 
+// Get, Decrease the number of life remaining
+short player_get_life(struct player * player);
+void player_dec_life(struct player * player);
+
 // Load the player position from the map
 void player_from_map(struct player* player, struct map* map);
 

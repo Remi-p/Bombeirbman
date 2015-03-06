@@ -9,6 +9,9 @@
 struct game {
 	struct level* curr_level; // current level
 	struct player* player;
+	struct monster* monster;
+	short pause;
+	short counter;
 };
 
 struct game* game_new(void) {
@@ -18,7 +21,10 @@ struct game* game_new(void) {
 	game->curr_level = level_get_level(0); // get maps of the first level
 
 	game->player = player_init(1);
+	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
 	player_from_map(game->player, level_get_map(game->curr_level, 0)); // get x,y of the player on the first map
+
+	game->pause = 0;
 
 	return game;
 }
@@ -54,7 +60,7 @@ void game_banner_display(struct game* game) {
 	window_display_image(sprite_get_banner_life(), x, y);
 
 	x = white_bloc + SIZE_BLOC;
-	window_display_image(sprite_get_number(2), x, y);
+	window_display_image(sprite_get_number(player_get_life(game->player)), x, y);
 
 	x = 2 * white_bloc + 2 * SIZE_BLOC;
 	window_display_image(sprite_get_banner_bomb(), x, y);
@@ -78,6 +84,7 @@ void game_display(struct game* game) {
 	game_banner_display(game);
 	level_display(game_get_curr_level(game));
 	player_display(game->player);
+	monsters_display(game->monster);
 
 	window_refresh();
 }
@@ -88,44 +95,79 @@ short input_keyboard(struct game* game) {
 	struct map* map = level_get_curr_map(game_get_curr_level(game));
 
 	while (SDL_PollEvent(&event)) {
-		switch (event.type) {
-		case SDL_QUIT:
-			return 1;
-		case SDL_KEYDOWN:
-			switch (event.key.keysym.sym) {
-			case SDLK_ESCAPE:
+
+		// We look for all the inputs only if the game isn't stop
+		if (game->pause == 1) {
+			switch (event.type) {
+				case SDL_QUIT:
+					return 1;
+				case SDL_KEYDOWN:
+					if (event.key.keysym.sym == SDLK_p) {
+						game->pause = 0;
+					}
+					break;
+				default:
+					break;
+			}
+			return 0;
+		} // Game is not stopped
+		else {
+			switch (event.type) {
+			case SDL_QUIT:
 				return 1;
-			case SDLK_UP:
-				player_set_current_way(player, NORTH);
-				player_move(player, map);
-				break;
-			case SDLK_DOWN:
-				player_set_current_way(player, SOUTH);
-				player_move(player, map);
-				break;
-			case SDLK_RIGHT:
-				player_set_current_way(player, EAST);
-				player_move(player, map);
-				break;
-			case SDLK_LEFT:
-				player_set_current_way(player, WEST);
-				player_move(player, map);
-				break;
-			case SDLK_SPACE:
-				break;
-			default:
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym) {
+					case SDLK_ESCAPE:
+						return 1;
+					case SDLK_p:
+						game->pause = 1;
+						return 0;
+					case SDLK_UP:
+						player_set_current_way(player, NORTH);
+						player_move(player, map);
+						break;
+					case SDLK_DOWN:
+						player_set_current_way(player, SOUTH);
+						player_move(player, map);
+						break;
+					case SDLK_RIGHT:
+						player_set_current_way(player, EAST);
+						player_move(player, map);
+						break;
+					case SDLK_LEFT:
+						player_set_current_way(player, WEST);
+						player_move(player, map);
+						break;
+					case SDLK_SPACE:
+						break;
+					default:
+						break;
+				}
+
 				break;
 			}
-
-			break;
 		}
 	}
 	return 0;
 }
 
 int game_update(struct game* game) {
+
 	if (input_keyboard(game))
 		return 1; // exit game
+
+	// Incrementing the counter
+	game->counter++;
+
+	if (game->counter > 15) {
+
+		game->counter = 0;
+
+		// We're not stopped : let's move some monsters
+		if (game->pause != 1) {
+			monsters_move(game->monster, level_get_curr_map(game->curr_level));
+		}
+	}
 
 	return 0;
 }

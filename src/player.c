@@ -11,6 +11,7 @@ struct player {
 	int x, y;
 	enum direction current_direction;
 	int nb_bomb;
+	short life;
 };
 
 struct player* player_init(int bomb_number) {
@@ -20,6 +21,7 @@ struct player* player_init(int bomb_number) {
 
 	player->current_direction = SOUTH;
 	player->nb_bomb = bomb_number;
+	player->life = LIFE;
 
 	return player;
 }
@@ -59,6 +61,16 @@ void player_dec_nb_bomb(struct player* player) {
 	player->nb_bomb -= 1;
 }
 
+short player_get_life(struct player* player) {
+	assert(player);
+	return player->life;
+}
+
+void player_dec_life(struct player* player) {
+	assert(player);
+	player->life -= 1;
+}
+
 void player_from_map(struct player* player, struct map* map) {
 	assert(player);
 	assert(map);
@@ -81,11 +93,19 @@ static int player_move_aux(struct player* player, struct map* map, int x, int y)
 
 	switch (map_get_cell_type(map, x, y)) {
 	case CELL_SCENERY:
-		return 1;
+		// We deny the move
+		return 0;
 		break;
 
 	case CELL_CASE:
-		return 1;
+
+		if (case_move(player->current_direction, x, y, map)) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+
 		break;
 
 	case CELL_BONUS:

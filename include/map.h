@@ -1,6 +1,9 @@
 #ifndef MAP_H_
 #define MAP_H_
 
+// For directions
+#include <constant.h>
+
 enum cell_type {
 	CELL_EMPTY=0,
 	CELL_GOAL,  // 1
@@ -66,5 +69,8 @@ struct map* map_get_default();
 
 // Display the map on the screen
 void map_display(struct map* map);
+
+// Move a case to a given direction
+int case_move(enum direction current_dir, int x, int y, struct map* map);
 
 #endif /* MAP_H_ */
