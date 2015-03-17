@@ -188,8 +188,12 @@ int game_update(struct game* game) {
 
 	// Updating player
 	player_update(level_get_map(game->curr_level, 0), game->player);
+
 	// Updating bombs
-	bombs_update(level_get_map(game->curr_level, 0), game->bomb);
+	if (bombs_update(level_get_map(game->curr_level, 0), game->bomb)) {
+		free(game->bomb);
+		game->bomb = NULL;
+	}
 
 	return 0;
 }

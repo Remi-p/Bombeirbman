@@ -15,10 +15,10 @@ int bomb_get_x(struct bomb* bomb);
 int bomb_get_y(struct bomb* bomb);
 
 // Make the bomb explode
-void bomb_explode(struct bomb* previous, struct bomb* bomb);
+short bomb_explode(struct bomb* previous, struct bomb* bomb);
 
 // Updating the bomb in the FPS rate
-void bombs_update(struct map* map, struct bomb* bomb);
+short bombs_update(struct map* map, struct bomb* bomb);
 
 // Display one bomb on the screen
 void bomb_display(struct bomb* bomb);

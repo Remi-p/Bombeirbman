@@ -41,7 +41,7 @@ int bomb_get_y(struct bomb* bomb) {
 	return bomb->y;
 }
 
-void bomb_explode(struct bomb* previous, struct bomb* bomb) {
+short bomb_explode(struct bomb* previous, struct bomb* bomb) {
 
 	assert(bomb);
 
@@ -52,15 +52,17 @@ void bomb_explode(struct bomb* previous, struct bomb* bomb) {
 	}
 	// It is alone
 	else if (bomb->next == NULL) {
-		bomb = NULL;
+		return 1;
 	}
 	else {
 		free(bomb);
 	}
 
+	return 0;
+
 }
 
-void bombs_update(struct map* map, struct bomb* bomb) {
+short bombs_update(struct map* map, struct bomb* bomb) {
 
 	struct bomb* previous = NULL;
 
@@ -70,15 +72,15 @@ void bombs_update(struct map* map, struct bomb* bomb) {
 			bomb->time--;
 		else {
 			map_set_cell_type(map, bomb->x, bomb->y, CELL_EMPTY);
-			bomb_explode(previous, bomb);
+			if (bomb_explode(previous, bomb)) return 1;
 		}
-
-		// ERREUR ICI ==> Tentative d'allocation alors que la bomb a explosé
 
 		previous = bomb;
 		bomb = bomb->next;
 
 	}
+
+	return 0;
 
 }
 
