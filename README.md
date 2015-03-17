@@ -5,9 +5,20 @@
 ### 17.03.15
 
 * *include/bomb.h*
+* *include/constant.h*
+* *include/monster.h*
+* *include/player.h*
 * *src/bomb.c*
 	* Externalize the deletion of a bomb when it's the last of the map
+	* Take charge of the explosion (`explosion`)
+	* Start of supporting the fire from a bomb
+	* Range of bombs
 * *src/game.c*
+* *src/monster.c*
+	* life of monsters
+	* decreasing monster's life when on a bomb impact
+* *src/player.c*
+	* decreasing player's life when on a bomb
 
 ### 06.03.15
 
