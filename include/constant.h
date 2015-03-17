@@ -19,6 +19,8 @@
 
 // Life of the player
 #define LIFE 8
+// Default range for the player
+#define PORTEE 2
 // Invincibility time
 #define INVINCIBILITY 50
 // Bomb time

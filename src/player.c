@@ -14,6 +14,7 @@ struct player {
 	short life;
 	int invincibility;
 	short visible; // Used for making the player blinked
+	short portee;
 };
 
 struct player* player_init(int bomb_number) {
@@ -24,6 +25,7 @@ struct player* player_init(int bomb_number) {
 	player->current_direction = SOUTH;
 	player->nb_bomb = bomb_number;
 	player->life = LIFE;
+	player->portee = PORTEE;
 	player->invincibility = 0;
 	player->visible = 1;
 
@@ -70,6 +72,14 @@ short player_get_life(struct player* player) {
 	return player->life;
 }
 
+void fire_in_the_hole(struct player* player, int x, int y) {
+
+	if (player->x == x && player->y == y) {
+		player_dec_life(player);
+	}
+
+}
+
 void player_dec_life(struct player* player) {
 	assert(player);
 	if (player->invincibility <= 0) {
@@ -91,7 +101,7 @@ short player_is_vis(struct player* player) {
 struct bomb* create_bomb(struct map* map, struct bomb* previous, struct player* player) {
 	if (player->nb_bomb > 0) {
 		map_set_cell_type(map, player->x, player->y, CELL_BOMB);
-		return bomb_init(player->x, player->y, previous);
+		return bomb_init(player->x, player->y, previous, player->portee);
 	}
 	else
 		return previous;

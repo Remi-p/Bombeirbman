@@ -28,6 +28,9 @@ void player_dec_nb_bomb(struct player * player);
 short player_get_life(struct player * player);
 void player_dec_life(struct player * player);
 
+// Decrease life player if he is in the given coordinate
+void fire_in_the_hole(struct player* player, int x, int y);
+
 // Return the time of invicibility remaining for the player
 int player_is_inv(struct player* player);
 

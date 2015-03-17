@@ -26,6 +26,9 @@ void monster_move(struct monster* monster, struct map* map, short force);
 // Move all the monsters
 void monsters_move(struct monster* monster, struct map* map);
 
+// Decrease the life of a monster if he's in the given coordinates
+void kill_the_monster_here(struct monster* monster, int x, int y);
+
 // Return 1 if there is a monster, 0 otherwise.
 // Also move the monster from the cell.
 short is_there_a_monster_here(struct monster* monster, int x, int y, struct map* map);

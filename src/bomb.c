@@ -10,16 +10,18 @@
 struct bomb {
 	int x, y;
 	int time;
+	short portee;
 	struct bomb* next;
 };
 
-struct bomb* bomb_init(int x, int y, struct bomb* next) {
+struct bomb* bomb_init(int x, int y, struct bomb* next, short portee) {
 	struct bomb* bomb = malloc(sizeof(*bomb));
 	if (!bomb)
 		error("Memory error");
 
 	bomb->x = x;
 	bomb->y = y;
+	bomb->portee = portee;
 	bomb->next = next;
 	bomb->time = BOMB;
 
@@ -62,7 +64,66 @@ short bomb_explode(struct bomb* previous, struct bomb* bomb) {
 
 }
 
-short bombs_update(struct map* map, struct bomb* bomb) {
+short exp_fire(struct map* map, int x, int y, struct player* player, struct monster* monster) {
+
+	if (!map_is_inside(map, x, y))
+		return 0;
+
+	switch (map_get_cell_type(map, x, y)) {
+		case CELL_SCENERY:
+			return 0;
+			break;
+
+		case CELL_BOMB:
+			return 0;
+			break;
+
+		default:
+			break;
+	}
+
+	fire_in_the_hole(player, x, y);
+	kill_the_monster_here(monster, x, y);
+	map_set_cell_type(map, x, y, CELL_TREE);
+
+	return 1;
+
+}
+
+void explosion(struct map* map, int x, int y, short portee, struct player* player, struct monster* monster) {
+
+	int x_dir, y_dir;
+	int x_move, y_move;
+
+	exp_fire(map, x, y, player, monster);
+
+	y_move = 0;
+	for (x_dir = -1 ; x_dir <= 1 ; x_dir = x_dir + 2) { // Loop for x-direction
+
+		for (x_move = x_dir ; x_move*x_dir <= x_dir*portee*x_dir ; x_move = x_move + x_dir) {
+
+			if (!exp_fire(map, x + x_move, y + y_move, player, monster))
+				break;
+
+		}
+
+	}
+
+	x_move = 0;
+	for (y_dir = -1 ; y_dir <= 1; y_dir = y_dir + 2) { // And for y
+
+		for (y_move = y_dir ; y_move*y_dir <= y_dir*y_dir*portee ; y_move = y_move + y_dir) {
+
+			if (!exp_fire(map, x + x_move, y + y_move, player, monster))
+				break;
+
+		}
+
+	}
+
+}
+
+short bombs_update(struct map* map, struct bomb* bomb, struct player* player, struct monster* monster) {
 
 	struct bomb* previous = NULL;
 
@@ -72,6 +133,7 @@ short bombs_update(struct map* map, struct bomb* bomb) {
 			bomb->time--;
 		else {
 			map_set_cell_type(map, bomb->x, bomb->y, CELL_EMPTY);
+			explosion(map, bomb->x, bomb->y, bomb->portee, player, monster);
 			if (bomb_explode(previous, bomb)) return 1;
 		}
 

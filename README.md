@@ -2,11 +2,20 @@
 
 ## Modifications
 
+### 17.03.15
+
+* *include/bomb.h*
+* *src/bomb.c*
+	* Externalize the deletion of a bomb when it's the last of the map
+* *src/game.c*
+
 ### 06.03.15
 
+* *include/bomb.h*
 * *include/constant.h*
 * *include/monster.h*
 * *include/player.h*
+* *src/sprite.c*
 * *src/game.c*
 	* Blinking of the player when hit (`game_display`)
 	* Calling function `player_on_monster` for collision with monster
@@ -16,6 +25,10 @@
 * *src/player.c*
 	* Support for invincibility & visibility (blinking)
 	* Adding a fuction for updating part of the player every frame
+	* Putting a bomb on the map
+* *src/bomb.c*
+	* Displaying, exploding, updating bombs
+	
 
 ### Before 05.03.15
 

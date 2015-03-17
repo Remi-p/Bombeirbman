@@ -2,7 +2,6 @@
 #include <assert.h>
 
 #include <monster.h>
-#include <player.h>
 #include <sprite.h>
 #include <window.h>
 #include <misc.h>
@@ -11,6 +10,7 @@
 
 struct monster {
 	int x, y;
+	short life;
 	enum direction current_direction;
 	struct monster* next;
 };
@@ -24,6 +24,9 @@ struct monster* monster_init(int x, int y, struct monster* next, short rand) {
 
 	monster->x = x;
 	monster->y = y;
+
+	// TODO : Constante ?
+	monster->life = 1;
 
 	// The generation of the random first position is made outside this function
 	monster->current_direction = rand; // From 0 to 3 for all the directions
@@ -169,6 +172,18 @@ void monsters_move(struct monster* monster, struct map* map) {
 	while(monster != NULL) {
 		monster->current_direction = rand() % 4;
 		monster_move(monster, map, 0);
+		monster = monster->next;
+	}
+
+}
+
+void kill_the_monster_here(struct monster* monster, int x, int y) {
+
+	while(monster != NULL) {
+		if (monster->x == x && monster->y == y) {
+			//kill_monster();
+			return;
+		}
 		monster = monster->next;
 	}
 
