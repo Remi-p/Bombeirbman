@@ -9,10 +9,19 @@
 #include <sprite.h>
 #include <window.h>
 
+struct fire {
+	short time;
+	int x;
+	int y;
+	struct fire* next;
+	struct fire* previous;
+};
+
 struct map {
 	int width;
 	int height;
 	unsigned char* grid;
+	struct fire* fire;
 };
 
 #define CELL(i,j) (i +  map->width * j)
@@ -86,6 +95,81 @@ void map_set_cell_type(struct map* map, int x, int y, enum cell_type type)
 	map->grid[CELL(x,y)] = type;
 }
 
+void add_fire_to_map(struct map* map, int x, int y, short time) {
+
+	struct fire* fire = malloc(sizeof(*fire));
+
+	fire->next = map->fire;
+	fire->previous = NULL;
+	fire->time = time;
+	fire->x = x;
+	fire->y = y;
+
+	map->fire = fire;
+}
+
+struct fire* dec_fire(struct fire* fire) {
+
+	fire->time--;
+
+	if (fire->time <= 0) {
+
+		if (fire->previous == NULL && fire->next == NULL) {
+			free(fire);
+			return NULL;
+		}
+
+		if (fire->previous != NULL)
+			fire->previous->next = fire->next;
+
+		if (fire->next != NULL)
+			fire->next->previous = fire->previous;
+
+		struct fire* fire_next = fire->next;
+		free(fire);
+		return fire_next;
+
+	}
+	else {
+		return fire;
+	}
+
+}
+
+void display_fire(struct map* map) {
+
+	struct fire* fire = map->fire;
+	struct fire* fire_prev = NULL;
+
+	while (fire != NULL) {
+
+		window_display_image(sprite_get_fire(), fire->x * SIZE_BLOC, fire->y * SIZE_BLOC);
+
+		fire_prev = fire;
+		fire = fire->next;
+		if (dec_fire(fire_prev) == NULL)
+			map->fire = NULL;
+	}
+
+}
+
+short is_there_fire(struct map* map, int x, int y) {
+
+	struct fire* fire = map->fire;
+
+	while (fire != NULL) {
+
+		if (fire->x == x && fire->y == y)
+			return 1;
+
+		fire = fire->next;
+
+	}
+
+	return 0;
+
+}
+
 void display_bonus(struct map* map, int x, int y, unsigned char type)
 {
 	// bonus is encoded with the 4 most significant bits
@@ -103,7 +187,11 @@ void display_bonus(struct map* map, int x, int y, unsigned char type)
 		break;
 
 	case BONUS_BOMB_NB_DEC:
-		window_display_image(sprite_get_bonus(BONUS_BOMB_RANGE_DEC), x, y);
+		window_display_image(sprite_get_bonus(BONUS_BOMB_NB_DEC), x, y);
+		break;
+
+	case BONUS_LIFE:
+		window_display_image(sprite_get_bonus(BONUS_LIFE), x, y);
 		break;
 	}
 }
@@ -167,12 +255,12 @@ struct map* map_get_default(void)
 	struct map* map = map_new(MAP_WIDTH, MAP_HEIGHT);
 
 	unsigned char themap[MAP_WIDTH * MAP_HEIGHT] = {
-			CELL_PLAYER, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,
+			CELL_PLAYER, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_MONSTER, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,
 			CELL_STONE, CELL_STONE, CELL_STONE, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_STONE, CELL_STONE, CELL_STONE, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_CASE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
-			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_CASE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
-			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_CASE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
-			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_STONE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
+			CELL_BONUS_RANGEINC, CELL_BONUS_RANGEDEC, CELL_MONSTER, CELL_EMPTY, CELL_STONE, CELL_CASE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
+			CELL_BONUS_BOMBINC, CELL_BONUS_BOMBDEC, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_CASE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
+			CELL_BONUS_LIFE, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_STONE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY , CELL_EMPTY, CELL_EMPTY, CELL_STONE,  CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_TREE, CELL_CASE, CELL_TREE, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,  CELL_EMPTY, CELL_STONE,  CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_TREE, CELL_TREE, CELL_TREE, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,  CELL_STONE,  CELL_EMPTY, CELL_EMPTY,

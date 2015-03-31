@@ -23,11 +23,14 @@ struct monster* monsters_from_map(struct map* map);
 // Move one monster according to the direction
 void monster_move(struct monster* monster, struct map* map, short force);
 
-// Move all the monsters
-void monsters_move(struct monster* monster, struct map* map);
+// Move all the monsters - and clean the array ('to_kill')
+struct monster* monsters_move(struct monster* monster, struct map* map);
+
+// Kill a given monster
+struct monster* kill_monster(struct monster* monster);
 
 // Decrease the life of a monster if he's in the given coordinates
-void kill_the_monster_here(struct monster* monster, int x, int y);
+struct monster* kill_the_monster_here(struct monster* monster, int x, int y);
 
 // Return 1 if there is a monster, 0 otherwise.
 // Also move the monster from the cell.

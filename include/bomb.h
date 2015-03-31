@@ -12,7 +12,7 @@ struct player;
 struct bomb;
 
 // Creates a new bomb with a given number of available bombs
-struct bomb* bomb_init(int x, int y, struct bomb* next, short portee);
+struct bomb* bomb_init(int x, int y, struct bomb* next, short portee, struct player* player);
 void   bomb_free(struct bomb* bomb);
 
 // Returns the current position of the bomb
@@ -20,7 +20,7 @@ int bomb_get_x(struct bomb* bomb);
 int bomb_get_y(struct bomb* bomb);
 
 // Make the bomb explode
-short bomb_explode(struct bomb* previous, struct bomb* bomb);
+short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* player);
 
 // Burn for burn, wound for wound, bruise for bruise.
 short exp_fire(struct map* map, int x, int y, struct player* player, struct monster* monster);

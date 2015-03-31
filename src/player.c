@@ -100,8 +100,9 @@ short player_is_vis(struct player* player) {
 
 struct bomb* create_bomb(struct map* map, struct bomb* previous, struct player* player) {
 	if (player->nb_bomb > 0) {
+		player_dec_nb_bomb(player);
 		map_set_cell_type(map, player->x, player->y, CELL_BOMB);
-		return bomb_init(player->x, player->y, previous, player->portee);
+		return bomb_init(player->x, player->y, previous, player->portee, player);
 	}
 	else
 		return previous;

@@ -41,7 +41,13 @@ enum compose_type {
 	CELL_CASE_BOMBINC  = CELL_CASE | (BONUS_BOMB_NB_INC << 4), 		//  0011 0100
     CELL_CASE_BOMBDEC  = CELL_CASE | (BONUS_BOMB_NB_DEC << 4), 		//  0100 0100
     CELL_CASE_LIFE     = CELL_CASE | (BONUS_LIFE << 4), 			//  0101 0100
-    CELL_CASE_MONSTER  = CELL_CASE | (BONUS_MONSTER << 4) 			//  0110 0100
+    CELL_CASE_MONSTER  = CELL_CASE | (BONUS_MONSTER << 4), 			//  0110 0100
+
+    CELL_BONUS_RANGEINC = CELL_BONUS | (BONUS_BOMB_RANGE_INC << 4), 	//  0001 0101
+    CELL_BONUS_RANGEDEC = CELL_BONUS | (BONUS_BOMB_RANGE_DEC << 4), 	//  0010 0101
+	CELL_BONUS_BOMBINC  = CELL_BONUS | (BONUS_BOMB_NB_INC << 4), 		//  0011 0101
+    CELL_BONUS_BOMBDEC  = CELL_BONUS | (BONUS_BOMB_NB_DEC << 4), 		//  0100 0101
+    CELL_BONUS_LIFE     = CELL_BONUS | (BONUS_LIFE << 4)	 			//  0101 0101
 };
 
 struct map;
@@ -60,6 +66,18 @@ enum cell_type map_get_cell_type(struct map* map, int x, int y);
 
 // Set the type of a cell
 void  map_set_cell_type(struct map* map, int x, int y, enum cell_type type);
+
+// Add the fire of a bomb explosion
+void add_fire_to_map(struct map* map, int x, int y, short time);
+
+// Decrease the time of fires
+struct fire* dec_fire(struct fire* fire);
+
+// Display all the fires from that map
+void display_fire(struct map* map);
+
+// Return 0 if there is no fire on the cell, or 1 else
+short is_there_fire(struct map* map, int x, int y);
 
 // Test if (x,y) is within the map
 int map_is_inside(struct map* map, int x, int y);

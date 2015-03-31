@@ -25,6 +25,8 @@
 #define INVINCIBILITY 50
 // Bomb time
 #define BOMB 100
+// Fire time
+#define FIRE 5
 
 enum direction {
 	NORTH = 0,

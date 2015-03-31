@@ -21,7 +21,7 @@ struct game* game_new(void) {
 	struct game* game = malloc(sizeof(*game));
 	game->curr_level = level_get_level(0); // get maps of the first level
 
-	game->player = player_init(1);
+	game->player = player_init(2);
 	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
 	game->bomb = NULL;
 	player_from_map(game->player, level_get_map(game->curr_level, 0)); // get x,y of the player on the first map
@@ -89,6 +89,7 @@ void game_display(struct game* game) {
 	if (player_is_vis(game->player))
 		player_display(game->player);
 	monsters_display(game->monster);
+	display_fire(level_get_map(game_get_curr_level(game), 0));
 
 	window_refresh();
 }
@@ -178,7 +179,7 @@ int game_update(struct game* game) {
 		// We're not stopped : let's move some monsters
 		if (game->pause != 1) {
 
-			monsters_move(game->monster, level_get_curr_map(game->curr_level));
+			game->monster = monsters_move(game->monster, level_get_curr_map(game->curr_level));
 
 			// We also call this function in input_keyboard if the player moved
 			player_on_monster(game->player, game->monster, level_get_map(game->curr_level, 0));

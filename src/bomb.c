@@ -12,9 +12,10 @@ struct bomb {
 	int time;
 	short portee;
 	struct bomb* next;
+	struct player* player;
 };
 
-struct bomb* bomb_init(int x, int y, struct bomb* next, short portee) {
+struct bomb* bomb_init(int x, int y, struct bomb* next, short portee, struct player* player) {
 	struct bomb* bomb = malloc(sizeof(*bomb));
 	if (!bomb)
 		error("Memory error");
@@ -24,6 +25,8 @@ struct bomb* bomb_init(int x, int y, struct bomb* next, short portee) {
 	bomb->portee = portee;
 	bomb->next = next;
 	bomb->time = BOMB;
+	// We save the player, so that we could increase his number of bomb we the bomb explode
+	bomb->player = player;
 
 	return bomb;
 }
@@ -43,9 +46,11 @@ int bomb_get_y(struct bomb* bomb) {
 	return bomb->y;
 }
 
-short bomb_explode(struct bomb* previous, struct bomb* bomb) {
+short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* player) {
 
 	assert(bomb);
+
+	player_inc_nb_bomb(player);
 
 	// It's not the first of the list
 	if (previous != NULL) {
@@ -75,6 +80,7 @@ short exp_fire(struct map* map, int x, int y, struct player* player, struct mons
 			break;
 
 		case CELL_BOMB:
+			add_fire_to_map(map, x, y, FIRE);
 			return 0;
 			break;
 
@@ -84,7 +90,9 @@ short exp_fire(struct map* map, int x, int y, struct player* player, struct mons
 
 	fire_in_the_hole(player, x, y);
 	kill_the_monster_here(monster, x, y);
-	map_set_cell_type(map, x, y, CELL_TREE);
+
+	add_fire_to_map(map, x, y, FIRE);
+	//map_set_cell_type(map, x, y, CELL_TREE);
 
 	return 1;
 
@@ -129,12 +137,15 @@ short bombs_update(struct map* map, struct bomb* bomb, struct player* player, st
 
 	while(bomb != NULL) {
 
+		if (is_there_fire(map, bomb->x, bomb->y))
+			bomb->time = 0;
+
 		if (bomb->time > 0)
 			bomb->time--;
 		else {
 			map_set_cell_type(map, bomb->x, bomb->y, CELL_EMPTY);
 			explosion(map, bomb->x, bomb->y, bomb->portee, player, monster);
-			if (bomb_explode(previous, bomb)) return 1;
+			if (bomb_explode(previous, bomb, player)) return 1;
 		}
 
 		previous = bomb;

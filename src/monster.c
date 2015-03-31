@@ -13,6 +13,8 @@ struct monster {
 	short life;
 	enum direction current_direction;
 	struct monster* next;
+	struct monster* previous;
+	short to_kill;
 };
 
 struct monster* monster_init(int x, int y, struct monster* next, short rand) {
@@ -31,6 +33,11 @@ struct monster* monster_init(int x, int y, struct monster* next, short rand) {
 	// The generation of the random first position is made outside this function
 	monster->current_direction = rand; // From 0 to 3 for all the directions
 
+	monster->to_kill = 0;
+
+	monster->previous = NULL;
+	if (next != NULL)
+		next->previous = monster;
 	monster->next = next;
 
 	return monster;
@@ -164,28 +171,70 @@ void monster_move(struct monster* monster, struct map* map, short force) {
 	}
 }
 
-void monsters_move(struct monster* monster, struct map* map) {
+struct monster* monsters_move(struct monster* monster, struct map* map) {
 
 	// For the random moves
 	time_t t; srand((unsigned) time(&t));
+	struct monster* source_monster = monster;
 
 	while(monster != NULL) {
-		monster->current_direction = rand() % 4;
-		monster_move(monster, map, 0);
-		monster = monster->next;
+
+		if (monster->to_kill == 1) {
+			source_monster = kill_monster(monster);
+			monster = source_monster;
+		}
+		else {
+			monster->current_direction = rand() % 4;
+			monster_move(monster, map, 0);
+			monster = monster->next;
+		}
+
 	}
+
+	if (source_monster != NULL) {
+		// We go back in the list
+		while(source_monster->previous != NULL) {
+			source_monster = source_monster->previous;
+		}
+	}
+
+	return source_monster;
 
 }
 
-void kill_the_monster_here(struct monster* monster, int x, int y) {
+struct monster* kill_monster(struct monster* monster) {
+
+	if (monster->previous == NULL && monster->next == NULL) {
+		free(monster);
+		return NULL;
+	}
+
+	struct monster* transfert = monster->next;
+
+	if (monster->previous != NULL)
+		monster->previous->next = monster->next;
+
+	if (monster->next != NULL)
+		monster->next->previous = monster->previous;
+
+	free(monster);
+	return transfert;
+
+}
+
+struct monster* kill_the_monster_here(struct monster* monster, int x, int y) {
 
 	while(monster != NULL) {
-		if (monster->x == x && monster->y == y) {
-			//kill_monster();
-			return;
-		}
+
+		if (monster->x == x && monster->y == y)
+//			return kill_monster(monster);
+			monster->to_kill = 1;
+
 		monster = monster->next;
+
 	}
+
+	return NULL;
 
 }
 
@@ -214,7 +263,9 @@ void monsters_display(struct monster* monster) {
 		return;
 
 	while(monster != NULL) {
-		monster_display(monster);
+
+		if (monster->to_kill != 1)
+			monster_display(monster);
 		monster = monster->next;
 	}
 
