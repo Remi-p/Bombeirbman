@@ -20,6 +20,9 @@ void monster_set_current_way(struct monster * monster, enum direction direction)
 // Create the variables for the monsters
 struct monster* monsters_from_map(struct map* map);
 
+// Add a monster to a list
+struct monster* add_monster(struct monster* monster, int x, int y);
+
 // Move one monster according to the direction
 void monster_move(struct monster* monster, struct map* map, short force);
 
@@ -27,10 +30,10 @@ void monster_move(struct monster* monster, struct map* map, short force);
 struct monster* monsters_move(struct monster* monster, struct map* map);
 
 // Kill a given monster
-struct monster* kill_monster(struct monster* monster);
+struct monster* kill_monster(struct map* map, struct monster* monster);
 
 // Decrease the life of a monster if he's in the given coordinates
-struct monster* kill_the_monster_here(struct monster* monster, int x, int y);
+void kill_the_monster_here(struct monster* monster, int x, int y);
 
 // Return 1 if there is a monster, 0 otherwise.
 // Also move the monster from the cell.

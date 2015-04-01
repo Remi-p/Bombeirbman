@@ -69,13 +69,13 @@ void game_banner_display(struct game* game) {
 
 	x = 2 * white_bloc + 3 * SIZE_BLOC;
 	window_display_image(
-			sprite_get_number(player_get_nb_bomb(game_get_player(game))), x, y);
+			sprite_get_number(player_get_nb_bomb_now(game_get_player(game))), x, y);
 
 	x = 3 * white_bloc + 4 * SIZE_BLOC;
 	window_display_image(sprite_get_banner_range(), x, y);
 
 	x = 3 * white_bloc + 5 * SIZE_BLOC;
-	window_display_image(sprite_get_number(1), x, y);
+	window_display_image(sprite_get_number(player_get_scope(game_get_player(game))), x, y);
 }
 
 void game_display(struct game* game) {
@@ -172,12 +172,12 @@ int game_update(struct game* game) {
 	// Incrementing the counter for monster moves
 	game->counter++;
 
-	if (game->counter > 15) {
+	// We're not stopped
+	if (game->pause != 1) {
 
-		game->counter = 0;
+		if (game->counter > 15) {
 
-		// We're not stopped : let's move some monsters
-		if (game->pause != 1) {
+			game->counter = 0;
 
 			game->monster = monsters_move(game->monster, level_get_curr_map(game->curr_level));
 
@@ -185,15 +185,15 @@ int game_update(struct game* game) {
 			player_on_monster(game->player, game->monster, level_get_map(game->curr_level, 0));
 
 		}
-	}
 
-	// Updating player
-	player_update(level_get_map(game->curr_level, 0), game->player);
+		// Updating player
+		player_update(level_get_map(game->curr_level, 0), game->player);
 
-	// Updating bombs
-	if (bombs_update(level_get_map(game->curr_level, 0), game->bomb, game->player, game->monster)) {
-		free(game->bomb);
-		game->bomb = NULL;
+		// Updating bombs
+		if (bombs_update(level_get_map(game->curr_level, 0), game->bomb, game->player, game->monster)) {
+			free(game->bomb);
+			game->bomb = NULL;
+		}
 	}
 
 	return 0;

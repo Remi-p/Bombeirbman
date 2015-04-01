@@ -63,7 +63,6 @@ void monster_set_current_way(struct monster* monster, enum direction way) {
 	monster->current_direction = way;
 }
 
-
 struct monster* monsters_from_map(struct map* map) {
 	assert(map);
 
@@ -82,6 +81,18 @@ struct monster* monsters_from_map(struct map* map) {
 	}
 
 	return previous_monster;
+}
+
+struct monster* add_monster(struct monster* monster, int x, int y) {
+
+	assert(monster);
+
+	if (monster != NULL)
+		// It will automatically come back to that monster in our function
+		return monster->previous = monster_init(x, y, monster, rand() % 4);
+	else
+		return monster_init(x, y, monster, rand() % 4);
+
 }
 
 static int monster_move_aux(struct monster* monster, struct map* map, int x, int y) {
@@ -180,8 +191,9 @@ struct monster* monsters_move(struct monster* monster, struct map* map) {
 	while(monster != NULL) {
 
 		if (monster->to_kill == 1) {
-			source_monster = kill_monster(monster);
-			monster = source_monster;
+			source_monster = monster; // Temporary variable
+			monster = monster->next;
+			source_monster = kill_monster(map, source_monster);
 		}
 		else {
 			monster->current_direction = rand() % 4;
@@ -202,27 +214,41 @@ struct monster* monsters_move(struct monster* monster, struct map* map) {
 
 }
 
-struct monster* kill_monster(struct monster* monster) {
+struct monster* kill_monster(struct map* map, struct monster* monster) {
+
+	assert(monster);
+
+	map_set_cell_type(map, monster->x, monster->y, CELL_EMPTY);
 
 	if (monster->previous == NULL && monster->next == NULL) {
-		free(monster);
-		return NULL;
+		//free(monster);
+		// When it's the last monster in place, we do not free the space :
+		// we need to keep it for being able to add new monster (from case) later
+		return monster;
 	}
 
-	struct monster* transfert = monster->next;
+	struct monster* transfert;
 
-	if (monster->previous != NULL)
+	if (monster->previous != NULL && monster->next != NULL) {
 		monster->previous->next = monster->next;
-
-	if (monster->next != NULL)
 		monster->next->previous = monster->previous;
+		transfert = monster->next;
+	}
+	else if (monster->previous == NULL) {
+		monster->next->previous = NULL;
+		transfert = monster->next;
+	}
+	else {
+		monster->previous->next = NULL;
+		transfert = monster->previous;
+	}
 
 	free(monster);
 	return transfert;
 
 }
 
-struct monster* kill_the_monster_here(struct monster* monster, int x, int y) {
+void kill_the_monster_here(struct monster* monster, int x, int y) {
 
 	while(monster != NULL) {
 
@@ -233,8 +259,6 @@ struct monster* kill_the_monster_here(struct monster* monster, int x, int y) {
 		monster = monster->next;
 
 	}
-
-	return NULL;
 
 }
 

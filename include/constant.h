@@ -18,9 +18,9 @@
 #define MAP_HEIGHT 12
 
 // Life of the player
-#define LIFE 8
+#define LIFE 2
 // Default range for the player
-#define PORTEE 2
+#define PORTEE 4
 // Invincibility time
 #define INVINCIBILITY 50
 // Bomb time

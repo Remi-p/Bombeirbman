@@ -50,7 +50,7 @@ short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* play
 
 	assert(bomb);
 
-	player_inc_nb_bomb(player);
+	player_inc_nb_bomb_now(player);
 
 	// It's not the first of the list
 	if (previous != NULL) {
@@ -81,6 +81,20 @@ short exp_fire(struct map* map, int x, int y, struct player* player, struct mons
 
 		case CELL_BOMB:
 			add_fire_to_map(map, x, y, FIRE);
+			return 0;
+			break;
+
+		case CELL_BONUS:
+			map_set_cell_type(map, x, y, CELL_EMPTY);
+			break;
+
+		case CELL_CASE:
+			// Monster apparition
+			if (map_get_bonus_type(map, x, y) == BONUS_MONSTER) {
+				add_monster(monster, x, y);
+				map_set_cell_type(map, x, y, CELL_MONSTER);
+			}
+			map_set_compose_type(map, x, y, CELL_BONUS, map_get_bonus_type(map, x, y));
 			return 0;
 			break;
 

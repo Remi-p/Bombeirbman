@@ -11,6 +11,7 @@ struct player {
 	int x, y;
 	enum direction current_direction;
 	int nb_bomb;
+	int nb_bomb_now;
 	short life;
 	int invincibility;
 	short visible; // Used for making the player blinked
@@ -24,6 +25,7 @@ struct player* player_init(int bomb_number) {
 
 	player->current_direction = SOUTH;
 	player->nb_bomb = bomb_number;
+	player->nb_bomb_now = bomb_number;
 	player->life = LIFE;
 	player->portee = PORTEE;
 	player->invincibility = 0;
@@ -52,19 +54,54 @@ void player_set_current_way(struct player* player, enum direction way) {
 	player->current_direction = way;
 }
 
-int player_get_nb_bomb(struct player* player) {
-	assert(player);
-	return player->nb_bomb;
-}
-
 void player_inc_nb_bomb(struct player* player) {
 	assert(player);
+	player->nb_bomb_now += 1;
 	player->nb_bomb += 1;
 }
 
 void player_dec_nb_bomb(struct player* player) {
 	assert(player);
-	player->nb_bomb -= 1;
+	if (player->nb_bomb > 1) {
+
+		player->nb_bomb -= 1;
+
+		if (player->nb_bomb_now >= 1)
+			player->nb_bomb_now -= 1;
+
+	}
+}
+
+int player_get_nb_bomb_now(struct player* player) {
+	assert(player);
+	return player->nb_bomb_now;
+}
+
+void player_inc_nb_bomb_now(struct player* player) {
+	assert(player);
+	if (player->nb_bomb_now + 1 <= player->nb_bomb)
+		player->nb_bomb_now += 1;
+}
+
+void player_dec_nb_bomb_now(struct player* player) {
+	assert(player);
+	player->nb_bomb_now -= 1;
+}
+
+int  player_get_scope(struct player * player) {
+	assert(player);
+	return player->portee;
+}
+
+void player_inc_scope(struct player * player) {
+	assert(player);
+	player->portee += 1;
+}
+
+void player_dec_scope(struct player * player) {
+	assert(player);
+	if (player->portee > 1)
+		player->portee -= 1;
 }
 
 short player_get_life(struct player* player) {
@@ -88,6 +125,12 @@ void player_dec_life(struct player* player) {
 	}
 }
 
+void player_inc_life(struct player * player) {
+	assert(player);
+	if (player->life <9)
+		player->life ++;
+}
+
 int player_is_inv(struct player* player) {
 	assert(player);
 	return player->invincibility;
@@ -99,8 +142,8 @@ short player_is_vis(struct player* player) {
 }
 
 struct bomb* create_bomb(struct map* map, struct bomb* previous, struct player* player) {
-	if (player->nb_bomb > 0) {
-		player_dec_nb_bomb(player);
+	if (player->nb_bomb_now > 0) {
+		player_dec_nb_bomb_now(player);
 		map_set_cell_type(map, player->x, player->y, CELL_BOMB);
 		return bomb_init(player->x, player->y, previous, player->portee, player);
 	}
@@ -130,49 +173,74 @@ void player_from_map(struct player* player, struct map* map) {
 	}
 }
 
+void player_on_bonus(struct player* player, struct map* map, int x, int y) {
+
+	switch(map_get_bonus_type(map, x, y)) {
+		case BONUS_BOMB_RANGE_INC:
+			player_inc_scope(player);
+			return;	break;
+		case BONUS_BOMB_RANGE_DEC:
+			player_dec_scope(player);
+			return;	break;
+		case BONUS_BOMB_NB_INC:
+			player_inc_nb_bomb(player);
+			return;	break;
+		case BONUS_BOMB_NB_DEC:
+			player_dec_nb_bomb(player);
+			return;	break;
+		case BONUS_LIFE:
+			player_inc_life(player);
+			return;	break;
+		case BONUS_MONSTER:
+			return; break;
+	}
+
+}
+
 static int player_move_aux(struct player* player, struct map* map, int x, int y) {
 
 	if (!map_is_inside(map, x, y))
 		return 0;
 
 	switch (map_get_cell_type(map, x, y)) {
-	case CELL_SCENERY:
-		// We deny the move
-		return 0;
-		break;
-
-	case CELL_CASE:
-
-		if (case_move(player->current_direction, x, y, map)) {
-			return 1;
-		}
-		else {
+		case CELL_SCENERY:
+			// We deny the move
 			return 0;
-		}
+			break;
 
-		break;
+		case CELL_CASE:
 
-	case CELL_BONUS:
-		break;
+			if (case_move(player->current_direction, x, y, map)) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
 
-	case CELL_GOAL:
-		break;
+			break;
 
-	case CELL_MONSTER:
-		// When the player can't die, we're not letting him going through monsters
-		if (player->invincibility > 0)
+		case CELL_GOAL:
+			break;
+
+		case CELL_MONSTER:
+			// When the player can't die, we're not letting him going through monsters
+			if (player->invincibility > 0)
+				return 0;
+			break;
+
+		case CELL_PLAYER:
+			break;
+
+		case CELL_BOMB:
 			return 0;
-		break;
+			break;
 
-	case CELL_PLAYER:
-		break;
+		case CELL_BONUS:
+			player_on_bonus(player, map, x, y);
+			break;
 
-	case CELL_BOMB:
-		return 0;
-		break;
-
-	default:
-		break;
+		default:
+			break;
 	}
 
 	// Player has moved

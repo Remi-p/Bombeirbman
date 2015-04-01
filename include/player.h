@@ -19,14 +19,29 @@ int player_get_y(struct player* player);
 // Set the direction of the next move of the player
 void player_set_current_way(struct player * player, enum direction direction);
 
+// Increase, Decrease the number of bomb that player can put
+void player_inc_nb_bomb(struct player * player);
+void player_dec_nb_bomb(struct player * player);
+
+// Get, Increase, Decrease the number of bomb the player is using actually
+int  player_get_nb_bomb_now(struct player * player);
+void player_inc_nb_bomb_now(struct player * player);
+void player_dec_nb_bomb_now(struct player * player);
+
 // Set, Increase, Decrease the number of bomb that player can put
 int  player_get_nb_bomb(struct player * player);
 void player_inc_nb_bomb(struct player * player);
 void player_dec_nb_bomb(struct player * player);
 
-// Get, Decrease the number of life remaining
+// Increase/Decrease and set the scope for bombs of the player
+int  player_get_scope(struct player * player);
+void player_inc_scope(struct player * player);
+void player_dec_scope(struct player * player);
+
+// Get, Decrease, Increase the number of life remaining
 short player_get_life(struct player * player);
 void player_dec_life(struct player * player);
+void player_inc_life(struct player * player);
 
 // Decrease life player if he is in the given coordinate
 void fire_in_the_hole(struct player* player, int x, int y);
@@ -45,6 +60,9 @@ void player_on_monster(struct player* player, struct monster* monster, struct ma
 
 // Load the player position from the map
 void player_from_map(struct player* player, struct map* map);
+
+// Do the actions when the player is on an item
+void player_on_bonus(struct player* player, struct map* map, int x, int y);
 
 // Move the player according to the current direction
 int player_move(struct player* player, struct map* map);
