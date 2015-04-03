@@ -10,6 +10,10 @@
 #define LINE_HEIGHT		4
 #define BANNER_HEIGHT	40
 
+// Width of the first line of the map files
+#define FIRST_LINE_WIDTH 7
+// (2 more characters for the EOL)
+
 // Time management
 #define DEFAULT_GAME_FPS 30
 

@@ -46,6 +46,15 @@ void player_inc_life(struct player * player);
 // Decrease life player if he is in the given coordinate
 void fire_in_the_hole(struct player* player, int x, int y);
 
+// Tell if the player has the key or if he doesn't
+short player_has_key(struct player* player);
+
+// Tell if we need to go to the next level
+short player_next_level(struct player* player);
+
+// Reset some parts of the player
+void player_reset(struct player* player);
+
 // Return the time of invicibility remaining for the player
 int player_is_inv(struct player* player);
 

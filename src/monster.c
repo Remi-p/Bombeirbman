@@ -110,6 +110,14 @@ static int monster_move_aux(struct monster* monster, struct map* map, int x, int
 		return 0;
 		break;
 
+	case CELL_DOOR:
+		return 0;
+		break;
+
+	case CELL_CLOSED_DOOR:
+		return 0;
+		break;
+
 	case CELL_BONUS:
 		break;
 
@@ -248,6 +256,21 @@ struct monster* kill_monster(struct map* map, struct monster* monster) {
 
 }
 
+void kill_the_monsters(struct monster* monster) {
+
+	while(monster->next != NULL) {
+
+		monster = monster->next;
+
+		if (monster->previous != NULL)
+			free(monster->previous);
+
+	}
+
+	free(monster);
+
+}
+
 void kill_the_monster_here(struct monster* monster, int x, int y) {
 
 	while(monster != NULL) {
@@ -265,7 +288,7 @@ void kill_the_monster_here(struct monster* monster, int x, int y) {
 short is_there_a_monster_here(struct monster* monster, int x, int y, struct map* map) {
 
 	while(monster != NULL) {
-		if (monster->x == x && monster->y == y) {
+		if (monster->x == x && monster->y == y && monster->to_kill != 1) {
 			monster_move(monster, map, 1);
 			return 1;
 		}

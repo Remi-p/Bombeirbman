@@ -105,6 +105,20 @@ void map_set_cell_type(struct map* map, int x, int y, enum cell_type type)
 	map->grid[CELL(x,y)] = type;
 }
 
+void map_open_door(struct map* map) {
+
+	int i, j;
+	for (i = 0; i < map_get_width(map); i++) {
+		for (j = 0; j < map_get_height(map); j++) {
+			if (map_get_cell_type(map, i, j) == CELL_CLOSED_DOOR) {
+				map_set_cell_type(map, i, j, CELL_DOOR);
+				return;
+			}
+		}
+	}
+
+}
+
 void add_fire_to_map(struct map* map, int x, int y, short time) {
 
 	struct fire* fire = malloc(sizeof(*fire));
@@ -260,17 +274,81 @@ void map_display(struct map* map)
 	}
 }
 
+struct map* map_from_file(int niveau, int carte) {
+
+	// Mainly inspirated by :
+	// http://stackoverflow.com/questions/1658530/load-numbers-from-text-file-in-c
+	// http://www.codingunit.com/c-tutorial-file-io-using-text-files
+
+	char buf[FIRST_LINE_WIDTH];
+	FILE *map_txt;
+
+	 // Allocate a string with enough space for the filename
+	char *filename = malloc(strlen("data/map_00_00"));
+	sprintf(filename, "data/map_%i_%i", niveau, carte);
+
+	map_txt = fopen(filename, "r");
+
+	if (!map_txt) // It didn't worked
+		return NULL;
+
+	// We get the first line
+	if (fgets(buf, FIRST_LINE_WIDTH, map_txt) == NULL)
+		return NULL;
+
+	// We get the params
+	char *numb;
+
+	numb = strtok(buf, ":");
+	int x = atoi(numb);
+	numb = strtok(NULL, ":");
+	// NULL is for saying to the function that we still used our variable
+	int y = atoi(numb);
+
+	printf("Carte n°%i : x = %i, y = %i \n", carte, x ,y);
+	struct map* map = map_new(x, y);
+
+	// Now we can do the loop
+
+	// Variables :
+	int line_width = x*3+1;
+	char line[line_width];
+	unsigned char themap[x * y];
+
+	for (int j = 0; j < y; j++) { // Lines
+
+		if (fgets(line, line_width, map_txt) == NULL)
+			return NULL;
+
+		// We need to start that outside (we'll use NULL after)
+		numb = strtok(line, ",");
+		themap[j*x] = (char)strtol(numb, NULL, 16);
+
+		for (int i = 1; i < x; i++) { // Columns
+			numb = strtok(NULL, ",");
+			themap[i + j*x] = (char)strtol(numb, NULL, 16);
+			//printf("|| %i : %i", (i + j*x),themap[i + j*x]);
+		}
+
+	}
+
+	for (int i = 0; i < x * y; i++)
+		map->grid[i] = themap[i];
+
+	return map;
+
+}
+
 struct map* map_get_default(void)
 {
-	struct map* map = map_new(MAP_WIDTH, MAP_HEIGHT);
-
+	/*
 	unsigned char themap[MAP_WIDTH * MAP_HEIGHT] = {
 			CELL_PLAYER, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,
 			CELL_STONE, CELL_STONE, CELL_STONE, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_STONE, CELL_STONE, CELL_STONE, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_CASE_MONSTER, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_CASE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
-			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_CASE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
-			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_STONE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
+			CELL_EMPTY, CELL_EMPTY, CELL_DOOR, CELL_EMPTY, CELL_STONE, CELL_CASE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
+			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_CLOSED_DOOR, CELL_STONE, CELL_STONE, CELL_STONE, CELL_EMPTY, CELL_EMPTY, CELL_STONE, CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY , CELL_EMPTY, CELL_EMPTY, CELL_STONE,  CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_TREE, CELL_CASE, CELL_TREE, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,  CELL_EMPTY, CELL_STONE,  CELL_EMPTY, CELL_EMPTY,
 			CELL_EMPTY, CELL_TREE, CELL_TREE, CELL_TREE, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,  CELL_STONE,  CELL_EMPTY, CELL_EMPTY,
@@ -278,11 +356,9 @@ struct map* map_get_default(void)
 			CELL_CASE_RANGEINC, CELL_STONE, CELL_STONE, CELL_STONE, CELL_STONE, CELL_STONE, CELL_STONE, CELL_STONE, CELL_STONE, CELL_STONE,  CELL_CASE_LIFE, CELL_EMPTY,
 			CELL_MONSTER,  CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, CELL_MONSTER
 		};
+		*/
 
-	for (int i = 0; i < MAP_WIDTH * MAP_HEIGHT; i++)
-		map->grid[i] = themap[i];
-
-	return map;
+	return map_from_file(1,1);
 }
 
 static int case_move_aux(struct map* map, int x, int y) {
@@ -292,11 +368,15 @@ static int case_move_aux(struct map* map, int x, int y) {
 
 	switch (map_get_cell_type(map, x, y)) {
 	case CELL_SCENERY:
-		// On refuse le déplacement de la caisse
+		// We don't move our case
 		return 0;
 		break;
 
 	case CELL_CASE:
+		return 0;
+		break;
+
+	case CELL_BOMB:
 		return 0;
 		break;
 

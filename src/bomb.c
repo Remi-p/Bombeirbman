@@ -46,6 +46,23 @@ int bomb_get_y(struct bomb* bomb) {
 	return bomb->y;
 }
 
+void delete_bombs(struct bomb* bomb) {
+
+	struct bomb* previous;
+
+	while(bomb->next != NULL) {
+
+		previous = bomb;
+		bomb = bomb->next;
+
+		if (previous != NULL)
+			free(previous);
+
+	}
+
+	free(previous);
+}
+
 short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* player) {
 
 	assert(bomb);
@@ -81,6 +98,11 @@ short exp_fire(struct map* map, int x, int y, struct player* player, struct mons
 
 		case CELL_BOMB:
 			add_fire_to_map(map, x, y, FIRE);
+			return 0;
+			break;
+
+		case CELL_DOOR:
+		case CELL_CLOSED_DOOR:
 			return 0;
 			break;
 

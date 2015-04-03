@@ -7,7 +7,7 @@
 // Sprites general
 #define MAP_CASE        "sprite/wood_box.png"
 #define MAP_KEY			"sprite/key.png"
-#define MAP_DOOR		"sprite/door.png"
+#define MAP_OPENED_DOOR	"sprite/door.png"
 #define MAP_CLOSED_DOOR	"sprite/closed_door.png"
 
 // Monsters
@@ -75,7 +75,7 @@ SDL_Surface* banner_line;
 SDL_Surface* box;
 SDL_Surface* goal;
 SDL_Surface* key;
-SDL_Surface* door;
+SDL_Surface* opened_door;
 SDL_Surface* closed_door;
 SDL_Surface* stone;
 SDL_Surface* tree;
@@ -129,7 +129,7 @@ void map_load() {
 	box = load_image(MAP_CASE);
 	key = load_image(MAP_KEY);
 	stone = load_image(MAP_STONE);
-	door = load_image(MAP_DOOR);
+	opened_door = load_image(MAP_OPENED_DOOR);
 	closed_door = load_image(MAP_CLOSED_DOOR);
 	fire = load_image(MAP_FIRE);
 }
@@ -140,7 +140,7 @@ void map_unload() {
 	SDL_FreeSurface(goal);
 	SDL_FreeSurface(key);
 	SDL_FreeSurface(stone);
-	SDL_FreeSurface(door);
+	SDL_FreeSurface(opened_door);
 	SDL_FreeSurface(closed_door);
 	SDL_FreeSurface(fire);
 }
@@ -283,8 +283,8 @@ SDL_Surface* sprite_get_fire() {
 }
 
 SDL_Surface* sprite_get_door() {
-	assert(door);
-	return door;
+	assert(opened_door);
+	return opened_door;
 }
 
 SDL_Surface* sprite_get_closed_door() {

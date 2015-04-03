@@ -19,6 +19,9 @@ void   bomb_free(struct bomb* bomb);
 int bomb_get_x(struct bomb* bomb);
 int bomb_get_y(struct bomb* bomb);
 
+// Delete the bombs
+void delete_bombs(struct bomb* bomb);
+
 // Make the bomb explode
 short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* player);
 

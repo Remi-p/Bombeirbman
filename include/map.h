@@ -73,6 +73,9 @@ void map_set_compose_type(struct map* map, int x, int y, enum cell_type type, en
 // Set the type of a cell
 void  map_set_cell_type(struct map* map, int x, int y, enum cell_type type);
 
+// Open the (first) closed door
+void map_open_door(struct map* map);
+
 // Add the fire of a bomb explosion
 void add_fire_to_map(struct map* map, int x, int y, short time);
 
@@ -93,6 +96,9 @@ struct map* map_get_default();
 
 // Display the map on the screen
 void map_display(struct map* map);
+
+// Extract the data from a file
+struct map* map_from_file(int niveau, int carte);
 
 // Move a case to a given direction
 int case_move(enum direction current_dir, int x, int y, struct map* map);

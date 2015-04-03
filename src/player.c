@@ -16,6 +16,8 @@ struct player {
 	int invincibility;
 	short visible; // Used for making the player blinked
 	short portee;
+	short clee;
+	short next_level;
 };
 
 struct player* player_init(int bomb_number) {
@@ -30,6 +32,8 @@ struct player* player_init(int bomb_number) {
 	player->portee = PORTEE;
 	player->invincibility = 0;
 	player->visible = 1;
+	player->clee = 0;
+	player->next_level = 0;
 
 	return player;
 }
@@ -129,6 +133,28 @@ void player_inc_life(struct player * player) {
 	assert(player);
 	if (player->life <9)
 		player->life ++;
+}
+
+short player_has_key(struct player* player) {
+	assert(player);
+	return player->clee;
+}
+
+short player_next_level(struct player* player) {
+	assert(player);
+
+	return player->next_level;
+}
+
+void player_reset(struct player* player) {
+	assert(player);
+
+	player->clee = 0;
+	player->invincibility = 0;
+	player->nb_bomb_now = player->nb_bomb;
+	player->next_level = 0;
+	player->visible = 1;
+
 }
 
 int player_is_inv(struct player* player) {
@@ -231,6 +257,21 @@ static int player_move_aux(struct player* player, struct map* map, int x, int y)
 		case CELL_PLAYER:
 			break;
 
+		case CELL_CLOSED_DOOR:
+			return 0;
+			break;
+
+		case CELL_KEY:
+			player->clee = 1;
+			map_set_cell_type(map, x, y, CELL_EMPTY);
+			// We open the door :
+			map_open_door(map);
+			break;
+
+		case CELL_DOOR:
+			player->next_level = 1;
+			break;
+
 		case CELL_BOMB:
 			return 0;
 			break;
@@ -300,6 +341,7 @@ void player_display(struct player* player) {
 }
 
 void player_update(struct map* map, struct player* player) {
+
 	if (player->visible == 0) {
 		player->visible = 1;
 	}

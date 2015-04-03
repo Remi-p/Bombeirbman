@@ -2,6 +2,29 @@
 
 ## Modifications
 
+### 01.04.15
+
+* *include/constant.h*
+* *include/map.h*
+* *include/monster.h*
+* *include/player.h*
+* *src/sprite.c*
+* *src/bomb.c*
+	* Deletion of bonus when explode
+	* Adding a bonus or a monster when a case exploded (according to the type of the case)
+* *src/game.c*
+	* Correction of the pause
+* *src/map.c*
+	* Support for obtaining the bonus type of a cell (`map_get_bonus_type`)
+	* Support for setting a complete type cell (basic type + bonus)
+	* Moving a case keep it type
+* *src/monster.c*
+	* Adding a monster (`add_monster`) outside the main function of creation
+* *src/player.c*
+	* We now got two types of `short` : nb_bomb & nb_bomb_now (for the number of bomb possible, and the actual number of bombs owned by the player)
+	* Managing the numbers for the bombs
+	* Support for the bonus (when the player is in a case)
+
 ### 31.03.15
 
 * *include/bomb.h*

@@ -19,7 +19,7 @@ struct game* game_new(void) {
 	sprite_load(); // load sprites into process memory
 
 	struct game* game = malloc(sizeof(*game));
-	game->curr_level = level_get_level(0); // get maps of the first level
+	game->curr_level = level_get_level(1); // get maps of the first level
 
 	game->player = player_init(2);
 	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
@@ -52,13 +52,15 @@ void game_banner_display(struct game* game) {
 
 	struct map* map = level_get_curr_map(game_get_curr_level(game));
 
-	int y = (map_get_height(map)) * SIZE_BLOC;
+	//int height = map_get_height(map)) * SIZE_BLOC;
+	int height = 12 * SIZE_BLOC;
+	int y = height;
 	for (int i = 0; i < map_get_width(map); i++)
 		window_display_image(sprite_get_banner_line(), i * SIZE_BLOC, y);
 
 	int white_bloc = ((map_get_width(map) * SIZE_BLOC) - 6 * SIZE_BLOC) / 4;
 	int x = white_bloc;
-	y = (map_get_height(map) * SIZE_BLOC) + LINE_HEIGHT;
+	y = height + LINE_HEIGHT;
 	window_display_image(sprite_get_banner_life(), x, y);
 
 	x = white_bloc + SIZE_BLOC;
@@ -76,6 +78,11 @@ void game_banner_display(struct game* game) {
 
 	x = 3 * white_bloc + 5 * SIZE_BLOC;
 	window_display_image(sprite_get_number(player_get_scope(game_get_player(game))), x, y);
+
+	if (player_has_key(game->player)) {
+	x = 0;
+	window_display_image(sprite_get_key(), x, y);
+	}
 }
 
 void game_display(struct game* game) {
@@ -89,7 +96,7 @@ void game_display(struct game* game) {
 	if (player_is_vis(game->player))
 		player_display(game->player);
 	monsters_display(game->monster);
-	display_fire(level_get_map(game_get_curr_level(game), 0));
+	display_fire(level_get_curr_map(game_get_curr_level(game)));
 
 	window_refresh();
 }
@@ -145,7 +152,7 @@ short input_keyboard(struct game* game) {
 						move = player_move(player, map);
 						break;
 					case SDLK_SPACE:
-						game->bomb = create_bomb(level_get_map(game->curr_level, 0), game->bomb, game->player);
+						game->bomb = create_bomb(level_get_curr_map(game->curr_level), game->bomb, game->player);
 						break;
 					default:
 						break;
@@ -158,10 +165,38 @@ short input_keyboard(struct game* game) {
 
 	// If we moved, we need to check if player & monsters are in the same cell
 	if (move > 0) {
-		player_on_monster(player, game->monster, level_get_map(game->curr_level, 0));
+		player_on_monster(player, game->monster, level_get_curr_map(game->curr_level));
 	}
 
 	return 0;
+}
+
+void next_level(struct game* game) {
+
+	assert(game);
+
+	if (level_continu(game->curr_level)) { // This condition also change the map
+
+		player_from_map(game->player, level_get_curr_map(game->curr_level));
+	}
+	else if (count_maps(next_level_number(game->curr_level), 1)) {
+
+		// Changing the level
+		level_free(game->curr_level);
+		game->curr_level = level_get_level(next_level_number(game->curr_level));
+		player_from_map(game->player, level_get_curr_map(game->curr_level));
+	}
+	else
+		exit(0);
+
+	player_reset(game->player);
+
+	kill_the_monsters(game->monster);
+	game->monster = monsters_from_map(level_get_curr_map(game->curr_level));
+
+
+	game->bomb = NULL;
+
 }
 
 int game_update(struct game* game) {
@@ -171,6 +206,10 @@ int game_update(struct game* game) {
 
 	// Incrementing the counter for monster moves
 	game->counter++;
+
+	// Going to the next level
+	if (player_next_level(game->player))
+		next_level(game);
 
 	// We're not stopped
 	if (game->pause != 1) {
@@ -182,15 +221,15 @@ int game_update(struct game* game) {
 			game->monster = monsters_move(game->monster, level_get_curr_map(game->curr_level));
 
 			// We also call this function in input_keyboard if the player moved
-			player_on_monster(game->player, game->monster, level_get_map(game->curr_level, 0));
+			player_on_monster(game->player, game->monster, level_get_curr_map(game->curr_level));
 
 		}
 
 		// Updating player
-		player_update(level_get_map(game->curr_level, 0), game->player);
+		player_update(level_get_curr_map(game->curr_level), game->player);
 
 		// Updating bombs
-		if (bombs_update(level_get_map(game->curr_level, 0), game->bomb, game->player, game->monster)) {
+		if (bombs_update(level_get_curr_map(game->curr_level), game->bomb, game->player, game->monster)) {
 			free(game->bomb);
 			game->bomb = NULL;
 		}

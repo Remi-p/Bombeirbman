@@ -8,6 +8,15 @@ struct level;
 // return level number num
 struct level*  level_get_level(int num);
 
+// Check if we still have remaining maps, and if so, upgrade
+short level_continu(struct level* level);
+
+// Give the next level number
+int next_level_number(struct level* level);
+
+// Check if a file exist if map is defined, tell the number of maps if map == 0
+short count_maps(int level, int map);
+
 // return current map of the level
 struct map* level_get_curr_map(struct level* level);
 

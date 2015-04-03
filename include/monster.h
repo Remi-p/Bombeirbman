@@ -32,6 +32,9 @@ struct monster* monsters_move(struct monster* monster, struct map* map);
 // Kill a given monster
 struct monster* kill_monster(struct map* map, struct monster* monster);
 
+// Delete all the monsters from the list
+void kill_the_monsters(struct monster* monster);
+
 // Decrease the life of a monster if he's in the given coordinates
 void kill_the_monster_here(struct monster* monster, int x, int y);
 
