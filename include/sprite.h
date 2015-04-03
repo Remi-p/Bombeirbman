@@ -12,13 +12,13 @@ SDL_Surface* sprite_get_player(enum direction direction);
 SDL_Surface* sprite_get_monster(enum direction direction);
 SDL_Surface* sprite_get_bomb(short type);
 SDL_Surface* sprite_get_bonus(enum bonus_type bonus_type);
+SDL_Surface* sprite_get_fire(short type);
 SDL_Surface* sprite_get_tree();
 SDL_Surface* sprite_get_box();
 SDL_Surface* sprite_get_key();
 SDL_Surface* sprite_get_stone();
 SDL_Surface* sprite_get_door();
 SDL_Surface* sprite_get_closed_door();
-SDL_Surface* sprite_get_fire();
 
 SDL_Surface* sprite_get_number(short number);
 SDL_Surface* sprite_get_banner_life();

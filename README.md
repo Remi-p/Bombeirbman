@@ -2,6 +2,41 @@
 
 ## Modifications
 
+### 03.04.15
+
+* *include/bomb.h*
+* *include/level.h*
+* *include/map.h*
+* *include/monster.h*
+* *include/player.h*
+* *src/sprite.c*
+* *include/bomb.c*
+	* Free/delete the bombs at a map change
+* *src/game.c*
+	* Opening doors with a key
+	* Updating the get_map
+	* Support of going to the next map / level
+* *src/level.c*
+	* Support for loading multiple maps level
+	* Support for auto detection of next level/map files
+		* Count the number of maps per level
+		* Tell when there is no more level
+* *src/map.c*
+	* Now it opens a door when the player got a key
+* *src/monster.c*
+	* Free/delete the monsters at a map change
+* *src/player.c*
+	* Support for the key-door interaction
+	* Variable for telling when we need to change the level (`next_level`)
+
+### 02.04.15
+
+* Adding test maps
+* *include/constant.h*
+* *include/map.h*
+* *src/map.c*
+	* Support for loading a map from a file (`map_from_file`)
+
 ### 01.04.15
 
 * *include/constant.h*

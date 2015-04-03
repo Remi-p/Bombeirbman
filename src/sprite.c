@@ -56,7 +56,8 @@
 #define IMG_BONUS_LIFE    		  "sprite/bonus_life.png"
 
 // Sprite for the fire
-#define MAP_FIRE 	"sprite/fire.png"
+#define MAP_FIRE_1 	"sprite/fire1.png"
+#define MAP_FIRE_2 	"sprite/fire2.png"
 
 // Sprites of Players
 #define PLAYER_LEFT     "sprite/player_left.png"
@@ -81,7 +82,7 @@ SDL_Surface* stone;
 SDL_Surface* tree;
 SDL_Surface* monster_img[4];
 SDL_Surface* bomb_img[4];
-SDL_Surface* fire;
+SDL_Surface* fire[2];
 
 // bonus
 #define NB_BONUS 5
@@ -131,7 +132,6 @@ void map_load() {
 	stone = load_image(MAP_STONE);
 	opened_door = load_image(MAP_OPENED_DOOR);
 	closed_door = load_image(MAP_CLOSED_DOOR);
-	fire = load_image(MAP_FIRE);
 }
 
 void map_unload() {
@@ -142,7 +142,16 @@ void map_unload() {
 	SDL_FreeSurface(stone);
 	SDL_FreeSurface(opened_door);
 	SDL_FreeSurface(closed_door);
-	SDL_FreeSurface(fire);
+}
+
+void fire_load() {
+	fire[0] = load_image(MAP_FIRE_1);
+	fire[1] = load_image(MAP_FIRE_2);
+}
+
+void fire_unload() {
+	SDL_FreeSurface(fire[0]);
+	SDL_FreeSurface(fire[1]);
 }
 
 void bonus_load() {
@@ -201,6 +210,7 @@ void sprite_load() {
 	player_load();
 	monster_load();
 	bomb_load();
+	fire_load();
 }
 
 void sprite_free() {
@@ -210,6 +220,7 @@ void sprite_free() {
 	player_unload();
 	monster_unload();
 	bomb_unload();
+	fire_unload();
 }
 
 SDL_Surface* sprite_get_number(short number) {
@@ -257,6 +268,11 @@ SDL_Surface* sprite_get_bonus(enum bonus_type bonus_type) {
 	return bonus[bonus_type];
 }
 
+SDL_Surface* sprite_get_fire(short type) {
+	assert(fire[type]);
+	return fire[type];
+}
+
 SDL_Surface* sprite_get_tree() {
 	assert(tree);
 	return tree;
@@ -275,11 +291,6 @@ SDL_Surface* sprite_get_key() {
 SDL_Surface* sprite_get_stone() {
 	assert(stone);
 	return stone;
-}
-
-SDL_Surface* sprite_get_fire() {
-	assert(fire);
-	return fire;
 }
 
 SDL_Surface* sprite_get_door() {

@@ -80,9 +80,14 @@ void game_banner_display(struct game* game) {
 	window_display_image(sprite_get_number(player_get_scope(game_get_player(game))), x, y);
 
 	if (player_has_key(game->player)) {
-	x = 0;
-	window_display_image(sprite_get_key(), x, y);
+		x = 4 * white_bloc + 5 * SIZE_BLOC;
+		window_display_image(sprite_get_key(), x, y);
 	}
+
+	x = 0;
+	window_display_image(
+			sprite_get_number(next_level_number(game_get_curr_level(game))-1),
+			x, y);
 }
 
 void game_display(struct game* game) {

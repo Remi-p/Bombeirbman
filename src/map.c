@@ -167,7 +167,7 @@ void display_fire(struct map* map) {
 
 	while (fire != NULL) {
 
-		window_display_image(sprite_get_fire(), fire->x * SIZE_BLOC, fire->y * SIZE_BLOC);
+		window_display_image(sprite_get_fire(fire->time%2), fire->x * SIZE_BLOC, fire->y * SIZE_BLOC);
 
 		fire_prev = fire;
 		fire = fire->next;
