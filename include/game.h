@@ -6,6 +6,16 @@
 #include <bomb.h>
 #include <level.h>
 
+// State of the game
+enum game_state {
+	STATE_GAME=0,
+	STATE_LEVEL_COMPLETED,
+	STATE_FIRST_MENU,
+	STATE_SECOND_MENU,
+	STATE_GAME_OVER,
+	STATE_VICTORY
+};
+
 // Abstract data type
 struct game;
 

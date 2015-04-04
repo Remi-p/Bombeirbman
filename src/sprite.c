@@ -65,6 +65,13 @@
 #define PLAYER_RIGHT    "sprite/player_right.png"
 #define PLAYER_DOWN     "sprite/player_down.png"
 
+// Sprites of game states
+#define IMG_STATE_COMPLETED "sprite/completed.png"
+#define IMG_VICTORY 		"sprite/victory.png"
+#define IMG_MENU_1			"sprite/first_menu.png"
+#define IMG_MENU_2			"sprite/second_menu.png"
+#define IMG_GAME_OVER		"sprite/game_over.png"
+
 // banner
 SDL_Surface* numbers[10];
 SDL_Surface* banner_life;
@@ -83,6 +90,9 @@ SDL_Surface* tree;
 SDL_Surface* monster_img[4];
 SDL_Surface* bomb_img[4];
 SDL_Surface* fire[2];
+SDL_Surface* completed;
+SDL_Surface* menu[3];
+SDL_Surface* victory;
 
 // bonus
 #define NB_BONUS 5
@@ -142,6 +152,22 @@ void map_unload() {
 	SDL_FreeSurface(stone);
 	SDL_FreeSurface(opened_door);
 	SDL_FreeSurface(closed_door);
+}
+
+void state_load() {
+	completed = load_image(IMG_STATE_COMPLETED);
+	//victory = load_image(IMG_VICTORY);
+	menu[0] = load_image(IMG_MENU_1);
+	menu[1] = load_image(IMG_MENU_2);
+	menu[2] = load_image(IMG_GAME_OVER);
+}
+
+void state_unload() {
+	SDL_FreeSurface(completed);
+	//SDL_FreeSurface(victory);
+	SDL_FreeSurface(menu[0]);
+	SDL_FreeSurface(menu[1]);
+	SDL_FreeSurface(menu[2]);
 }
 
 void fire_load() {
@@ -211,6 +237,7 @@ void sprite_load() {
 	monster_load();
 	bomb_load();
 	fire_load();
+	state_load();
 }
 
 void sprite_free() {
@@ -221,6 +248,7 @@ void sprite_free() {
 	monster_unload();
 	bomb_unload();
 	fire_unload();
+	state_unload();
 }
 
 SDL_Surface* sprite_get_number(short number) {
@@ -233,6 +261,17 @@ SDL_Surface* sprite_get_player(enum direction direction) {
 	return player_img[direction];
 }
 
+SDL_Surface* sprite_get_completed() {
+	assert(completed);
+	return completed;
+}
+
+/*
+SDL_Surface* sprite_get_victory() {
+	assert(victory);
+	return victory;
+}*/
+
 SDL_Surface* sprite_get_monster(enum direction direction) {
 	assert(monster_img[direction]);
 	return monster_img[direction];
@@ -241,6 +280,11 @@ SDL_Surface* sprite_get_monster(enum direction direction) {
 SDL_Surface* sprite_get_bomb(short type) {
 	assert(bomb_img[type]);
 	return bomb_img[type];
+}
+
+SDL_Surface* sprite_get_menu(short type) {
+	assert(menu[type]);
+	return menu[type];
 }
 
 SDL_Surface* sprite_get_banner_life() {

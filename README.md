@@ -23,11 +23,14 @@
 		* Tell when there is no more level
 * *src/map.c*
 	* Now it opens a door when the player got a key
+	* Animation of the fire
 * *src/monster.c*
 	* Free/delete the monsters at a map change
 * *src/player.c*
 	* Support for the key-door interaction
 	* Variable for telling when we need to change the level (`next_level`)
+* *src/game.c*
+	* Displaying the actual level number
 
 ### 02.04.15
 

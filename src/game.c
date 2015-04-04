@@ -11,8 +11,11 @@ struct game {
 	struct player* player;
 	struct monster* monster;
 	struct bomb* bomb;
+	int state_timer;
+	enum game_state game_state;
 	short pause;
 	short counter;
+	short multiplayer;
 };
 
 struct game* game_new(void) {
@@ -21,9 +24,12 @@ struct game* game_new(void) {
 	struct game* game = malloc(sizeof(*game));
 	game->curr_level = level_get_level(1); // get maps of the first level
 
-	game->player = player_init(2);
+	game->player = player_init(NB_BOMBS);
 	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
 	game->bomb = NULL;
+	game->state_timer = 0;
+	game->game_state = STATE_FIRST_MENU;
+	game->multiplayer = 0;
 	player_from_map(game->player, level_get_map(game->curr_level, 0)); // get x,y of the player on the first map
 
 	game->pause = 0;
@@ -36,6 +42,28 @@ void game_free(struct game* game) {
 
 	player_free(game->player);
 	level_free(game->curr_level);
+	delete_bombs(game->bomb);
+	kill_the_monsters(game->monster);
+}
+
+void game_reset(struct game* game) {
+
+	assert(game);
+
+	game_free(game);
+
+	game->curr_level = level_get_level(1);
+
+	game->player = player_init(NB_BOMBS);
+	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
+	game->bomb = NULL;
+	game->state_timer = 0;
+	game->game_state = STATE_FIRST_MENU;
+	game->multiplayer = 0;
+	player_from_map(game->player, level_get_map(game->curr_level, 0));
+
+	game->pause = 0;
+
 }
 
 struct player* game_get_player(struct game* game) {
@@ -44,6 +72,8 @@ struct player* game_get_player(struct game* game) {
 }
 
 struct level* game_get_curr_level(struct game* game) {
+	assert(game);
+
 	return game->curr_level;
 }
 
@@ -93,6 +123,9 @@ void game_banner_display(struct game* game) {
 void game_display(struct game* game) {
 	assert(game);
 
+	if (game->game_state != STATE_GAME)
+		return;
+
 	window_clear();
 
 	game_banner_display(game);
@@ -106,7 +139,76 @@ void game_display(struct game* game) {
 	window_refresh();
 }
 
-short input_keyboard(struct game* game) {
+short menu_input_keyboard(struct game* game) {
+
+	assert(game);
+
+	SDL_Event event;
+
+	while (SDL_PollEvent(&event)) {
+
+		switch (event.type) {
+		case SDL_QUIT:
+			return 1;
+		case SDL_KEYDOWN:
+			switch (event.key.keysym.sym) {
+
+				if (game->game_state == STATE_FIRST_MENU) {
+
+					case SDLK_o:
+					case SDLK_0:
+						game->multiplayer = 0;
+						game->game_state = STATE_SECOND_MENU;
+						break;
+					case SDLK_t:
+						game->multiplayer = 1;
+						game->game_state = STATE_SECOND_MENU;
+						break;
+				}
+
+				else if (game->game_state == STATE_SECOND_MENU) {
+
+					case SDLK_b:
+						game->game_state = STATE_FIRST_MENU;
+						break;
+					case SDLK_s:
+						game->game_state = STATE_GAME;
+						break;
+				}
+
+				else if (game->game_state == STATE_GAME_OVER) {
+
+					case SDLK_r:
+						game->game_state = STATE_GAME;
+						break;
+					case SDLK_m:
+						game->game_state = STATE_FIRST_MENU;
+						break;
+					case SDLK_q:
+						return 1;
+						break;
+
+				}
+
+				case SDLK_ESCAPE:
+					return 1;
+
+				default:
+					break;
+			}
+
+			break;
+		}
+	}
+
+	return 0;
+
+}
+
+short game_input_keyboard(struct game* game) {
+
+	assert(game);
+
 	SDL_Event event;
 	struct player* player = game_get_player(game);
 	struct map* map = level_get_curr_map(game_get_curr_level(game));
@@ -176,7 +278,7 @@ short input_keyboard(struct game* game) {
 	return 0;
 }
 
-void next_level(struct game* game) {
+void next_map(struct game* game) {
 
 	assert(game);
 
@@ -188,11 +290,17 @@ void next_level(struct game* game) {
 
 		// Changing the level
 		level_free(game->curr_level);
+		game->game_state = STATE_LEVEL_COMPLETED;
+		game->state_timer = SPLASH_SCREEN;
 		game->curr_level = level_get_level(next_level_number(game->curr_level));
-		player_from_map(game->player, level_get_curr_map(game->curr_level));
 	}
-	else
-		exit(0);
+	else {
+
+		game_reset(game);
+		game->state_timer = 2 * SPLASH_SCREEN;
+		game->game_state = STATE_VICTORY;
+
+	}
 
 	player_reset(game->player);
 
@@ -204,17 +312,21 @@ void next_level(struct game* game) {
 
 }
 
-int game_update(struct game* game) {
+int state_game_update(struct game* game) {
 
-	if (input_keyboard(game))
+	assert(game);
+
+	if (game_input_keyboard(game))
 		return 1; // exit game
 
 	// Incrementing the counter for monster moves
 	game->counter++;
 
 	// Going to the next level
-	if (player_next_level(game->player))
-		next_level(game);
+	if (player_next_level(game->player)) {
+		next_map(game);
+		return 0;
+	}
 
 	// We're not stopped
 	if (game->pause != 1) {
@@ -230,8 +342,11 @@ int game_update(struct game* game) {
 
 		}
 
-		// Updating player
-		player_update(level_get_curr_map(game->curr_level), game->player);
+		// Updating player (and displaying 'game over' if needed)
+		if (player_update(level_get_curr_map(game->curr_level), game->player)) {
+			game_reset(game);
+			game->game_state = STATE_GAME_OVER;
+		}
 
 		// Updating bombs
 		if (bombs_update(level_get_curr_map(game->curr_level), game->bomb, game->player, game->monster)) {
@@ -239,6 +354,93 @@ int game_update(struct game* game) {
 			game->bomb = NULL;
 		}
 	}
+
+	return 0;
+
+}
+
+void state_level_comp(struct game* game) {
+
+	assert(game);
+
+	if (game->game_state == STATE_LEVEL_COMPLETED) {
+
+		if (game->state_timer > 0) {
+			game->state_timer--;
+
+			window_clear();
+			window_display_image(sprite_get_completed(), 0, 0);
+			window_refresh();
+		}
+		else {
+			game->game_state = STATE_GAME;
+			player_from_map(game->player, level_get_curr_map(game->curr_level));
+		}
+
+	}
+	else if (game->game_state == STATE_VICTORY) {
+
+		if (game->state_timer > 0) {
+			game->state_timer--;
+
+			//window_clear();
+			//window_display_image(sprite_get_victory(), 0, 0);
+			//window_refresh();
+		}
+		else
+			game->game_state = STATE_FIRST_MENU;
+	}
+
+}
+
+int state_menu(struct game* game) {
+
+	assert(game);
+
+	if (menu_input_keyboard(game))
+		return 1; // exit game
+
+	if (game->game_state == STATE_FIRST_MENU) {
+		window_clear();
+		window_display_image(sprite_get_menu(0), 0, 0);
+		window_refresh();
+	}
+
+	else if(game->game_state == STATE_SECOND_MENU) {
+		window_clear();
+		window_display_image(sprite_get_menu(1), 0, 0);
+		window_refresh();
+	}
+
+	else if(game->game_state == STATE_GAME_OVER) {
+		window_clear();
+		window_display_image(sprite_get_menu(2), 0, 0);
+		window_refresh();
+	}
+
+	return 0;
+
+}
+
+int game_update(struct game* game) {
+
+	assert(game);
+
+	switch (game->game_state) {
+		case STATE_GAME:
+			return state_game_update(game);
+			break;
+		case STATE_LEVEL_COMPLETED:
+		case STATE_VICTORY:
+			state_level_comp(game);
+			break;
+		case STATE_FIRST_MENU:
+		case STATE_SECOND_MENU:
+		case STATE_GAME_OVER:
+			return state_menu(game);
+			break;
+	}
+
 
 	return 0;
 }

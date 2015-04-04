@@ -79,7 +79,7 @@ int player_move(struct player* player, struct map* map);
 // Display the player on the screen
 void player_display(struct player* player);
 
-// Updating the player in the FPS rate
-void player_update(struct map* map, struct player* player);
+// Updating the player in the FPS rate. Return 1 if player has 0 life
+short player_update(struct map* map, struct player* player);
 
 #endif /* PLAYER_H_ */

@@ -114,6 +114,7 @@ short player_get_life(struct player* player) {
 }
 
 void fire_in_the_hole(struct player* player, int x, int y) {
+	assert(player);
 
 	if (player->x == x && player->y == y) {
 		player_dec_life(player);
@@ -168,6 +169,9 @@ short player_is_vis(struct player* player) {
 }
 
 struct bomb* create_bomb(struct map* map, struct bomb* previous, struct player* player) {
+	assert(player);
+	assert(map);
+
 	if (player->nb_bomb_now > 0) {
 		player_dec_nb_bomb_now(player);
 		map_set_cell_type(map, player->x, player->y, CELL_BOMB);
@@ -178,6 +182,8 @@ struct bomb* create_bomb(struct map* map, struct bomb* previous, struct player* 
 }
 
 void player_on_monster(struct player* player, struct monster* monster, struct map* map) {
+	assert(player);
+	assert(map);
 
 	if (is_there_a_monster_here(monster, player_get_x(player), player_get_y(player), map) != 0)
 		player_dec_life(player);
@@ -200,6 +206,8 @@ void player_from_map(struct player* player, struct map* map) {
 }
 
 void player_on_bonus(struct player* player, struct map* map, int x, int y) {
+	assert(player);
+	assert(map);
 
 	switch(map_get_bonus_type(map, x, y)) {
 		case BONUS_BOMB_RANGE_INC:
@@ -224,6 +232,8 @@ void player_on_bonus(struct player* player, struct map* map, int x, int y) {
 }
 
 static int player_move_aux(struct player* player, struct map* map, int x, int y) {
+	assert(player);
+	assert(map);
 
 	if (!map_is_inside(map, x, y))
 		return 0;
@@ -289,6 +299,8 @@ static int player_move_aux(struct player* player, struct map* map, int x, int y)
 }
 
 int player_move(struct player* player, struct map* map) {
+	assert(player);
+
 	int x = player->x;
 	int y = player->y;
 	int move = 0;
@@ -340,7 +352,13 @@ void player_display(struct player* player) {
 			player->x * SIZE_BLOC, player->y * SIZE_BLOC);
 }
 
-void player_update(struct map* map, struct player* player) {
+short player_update(struct map* map, struct player* player) {
+
+	assert(map);
+	assert(player);
+
+	if (player_get_life(player) < 1)
+		return 1;
 
 	if (player->visible == 0) {
 		player->visible = 1;
@@ -352,4 +370,6 @@ void player_update(struct map* map, struct player* player) {
 	if (player->invincibility > 0) {
 		player->invincibility--;
 	}
+
+	return 0;
 }

@@ -31,11 +31,8 @@ struct level* level_get_level(int num) {
 		break;
 	}*/
 
-	short test = 2;
-
 	level->number = num;
-	level->nb_maps = test;
-	//level->nb_maps = count_maps(num, 0);
+	level->nb_maps = count_maps(num, 0);
 	level->cur_map = 0;
 	// We allocate the first layer of the array
 	level->maps = malloc(sizeof(*level->maps));
@@ -51,6 +48,8 @@ struct level* level_get_level(int num) {
 }
 
 short level_continu(struct level* level) {
+	assert(level);
+
 	if (level->cur_map < (level->nb_maps-1)) {
 		level->cur_map++;
 		return 1;
@@ -71,7 +70,7 @@ short count_maps(int level, int map) {
 	char *filename = malloc(strlen("data/map_00_00"));
 
 	if (map != 0) { // A specific map has been given
-		sprintf(filename, "data/map_%i_%i", level, 1);
+		sprintf(filename, "data/map_%i_%i", level, map);
 
 		if( access( filename, F_OK ) != -1 ) {
 			// Exist

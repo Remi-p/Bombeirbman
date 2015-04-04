@@ -48,23 +48,27 @@ int bomb_get_y(struct bomb* bomb) {
 
 void delete_bombs(struct bomb* bomb) {
 
-	struct bomb* previous;
+	struct bomb* previous = NULL;
 
-	while(bomb->next != NULL) {
+	if (bomb != NULL) {
+		while(bomb->next != NULL) {
 
-		previous = bomb;
-		bomb = bomb->next;
+			previous = bomb;
+			bomb = bomb->next;
 
-		if (previous != NULL)
-			free(previous);
+			if (previous != NULL)
+				free(previous);
 
+		}
 	}
 
-	free(previous);
+	if (previous != NULL)
+		free(previous);
 }
 
 short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* player) {
 
+	assert(player);
 	assert(bomb);
 
 	player_inc_nb_bomb_now(player);
@@ -87,6 +91,9 @@ short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* play
 }
 
 short exp_fire(struct map* map, int x, int y, struct player* player, struct monster* monster) {
+
+	assert(player);
+	assert(map);
 
 	if (!map_is_inside(map, x, y))
 		return 0;
@@ -136,6 +143,9 @@ short exp_fire(struct map* map, int x, int y, struct player* player, struct mons
 
 void explosion(struct map* map, int x, int y, short portee, struct player* player, struct monster* monster) {
 
+	assert(map);
+	assert(player);
+
 	int x_dir, y_dir;
 	int x_move, y_move;
 
@@ -168,6 +178,8 @@ void explosion(struct map* map, int x, int y, short portee, struct player* playe
 }
 
 short bombs_update(struct map* map, struct bomb* bomb, struct player* player, struct monster* monster) {
+
+	assert(player);
 
 	struct bomb* previous = NULL;
 

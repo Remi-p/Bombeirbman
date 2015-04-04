@@ -23,6 +23,8 @@
 
 // Life of the player
 #define LIFE 2
+// Number of bombs
+#define NB_BOMBS 2
 // Default range for the player
 #define PORTEE 4
 // Invincibility time
@@ -31,6 +33,9 @@
 #define BOMB 100
 // Fire time
 #define FIRE 5
+
+// Splash screen time (like level completed)
+#define SPLASH_SCREEN 50
 
 enum direction {
 	NORTH = 0,

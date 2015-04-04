@@ -305,7 +305,6 @@ struct map* map_from_file(int niveau, int carte) {
 	// NULL is for saying to the function that we still used our variable
 	int y = atoi(numb);
 
-	printf("Carte n°%i : x = %i, y = %i \n", carte, x ,y);
 	struct map* map = map_new(x, y);
 
 	// Now we can do the loop
