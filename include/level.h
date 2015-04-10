@@ -2,6 +2,7 @@
 #define LEVEL_H_
 
 #include <map.h>
+#include <stdio.h>
 
 struct level;
 
@@ -10,6 +11,12 @@ struct level*  level_get_level(int num);
 
 // Check if we still have remaining maps, and if so, upgrade
 short level_continu(struct level* level);
+
+// Load the level (+map) data
+void level_load(struct level* level, FILE* fSaveFile);
+
+// Save the level (+map) data
+void level_save(struct level* level, FILE* fSaveFile);
 
 // Give the next level number
 int next_level_number(struct level* level);

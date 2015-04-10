@@ -6,9 +6,16 @@
 
 struct monster;
 
+
 // Creates a new monster with a given number of available bombs
 struct monster* monster_init(int x, int y, struct monster* next, short rand);
 void   monster_free(struct monster* monster);
+
+// Give the number of monsters (used for saving)
+int monster_nb(struct monster* monster);
+
+// Display informations about the monster(s)
+void monster_debug(struct monster* next);
 
 // Returns the current position of the monster
 int monster_get_x(struct monster* monster);

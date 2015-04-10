@@ -31,6 +31,31 @@ struct bomb* bomb_init(int x, int y, struct bomb* next, short portee, struct pla
 	return bomb;
 }
 
+struct bomb* bomb_from_map(struct map* map, struct player* player) {
+
+	assert(map);
+
+	/* Initialize random number generator */
+
+	struct bomb* bomb_previous = NULL;
+
+	int i, j;
+	for (i = 0; i < map_get_width(map); i++) {
+		for (j = 0; j < map_get_height(map); j++) {
+			if (map_get_cell_type(map, i, j) == CELL_MONSTER) {
+
+				// If a loading is made, it's in one player mode
+				// So we give it the adresse of the only available player
+				bomb_previous = bomb_init(i, j, bomb_previous, player->portee, player);
+				// TODO : erreur: déréférencement d'un pointeur de type incomplet
+
+			}
+		}
+	}
+
+	return bomb_previous;
+}
+
 void bomb_free(struct bomb* bomb) {
 	assert(bomb);
 	free(bomb);
@@ -188,8 +213,15 @@ short bombs_update(struct map* map, struct bomb* bomb, struct player* player, st
 		if (is_there_fire(map, bomb->x, bomb->y))
 			bomb->time = 0;
 
-		if (bomb->time > 0)
+		if (bomb->time > 0) {
 			bomb->time--;
+
+			// For some reasons we have to typecast float for the denominator
+			int time = (15 / (float) BOMB) * (bomb->time); // By using int, time is automatically rounded
+
+			// We use compose_type for saving an approximation of the remaining time (in case of saving)
+			map_set_compose_type(map, bomb->x, bomb->y, CELL_BOMB, time);
+		}
 		else {
 			map_set_cell_type(map, bomb->x, bomb->y, CELL_EMPTY);
 			explosion(map, bomb->x, bomb->y, bomb->portee, player, monster);

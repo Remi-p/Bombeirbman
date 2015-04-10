@@ -15,6 +15,9 @@ struct bomb;
 struct bomb* bomb_init(int x, int y, struct bomb* next, short portee, struct player* player);
 void   bomb_free(struct bomb* bomb);
 
+// Take the bombs from the map (when loading)
+struct bomb* bomb_from_map(struct map* map, struct player* player);
+
 // Returns the current position of the bomb
 int bomb_get_x(struct bomb* bomb);
 int bomb_get_y(struct bomb* bomb);

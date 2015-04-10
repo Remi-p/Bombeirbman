@@ -12,6 +12,9 @@ struct player;
 struct player* player_init(int bomb_number);
 void   player_free(struct player* player);
 
+// Return sizeof(player) for the saving part
+int player_sizeof();
+
 // Returns the current position of the player
 int player_get_x(struct player* player);
 int player_get_y(struct player* player);

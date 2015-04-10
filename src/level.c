@@ -59,6 +59,32 @@ short level_continu(struct level* level) {
 	}
 }
 
+void level_load(struct level* level, FILE* fLoadFile) {
+
+	assert(level);
+
+	int cur_map;
+
+	fread(&cur_map, sizeof(int), 1, fLoadFile);
+
+	load_map(level_get_curr_map(level), fLoadFile);
+
+}
+
+void level_save(struct level* level, FILE* fSaveFile) {
+
+	assert(level);
+
+	int level_nb = level->number;
+	int map_nb = level->cur_map;
+
+	fwrite(&level_nb, sizeof(int), 1, fSaveFile);
+	fwrite(&map_nb, sizeof(int), 1, fSaveFile);
+
+	save_map(level_get_curr_map(level), fSaveFile);
+
+}
+
 int next_level_number(struct level* level) {
 	assert(level);
 	return level->number + 1;

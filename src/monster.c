@@ -43,6 +43,32 @@ struct monster* monster_init(int x, int y, struct monster* next, short rand) {
 	return monster;
 }
 
+int monster_nb(struct monster* monster) {
+
+	int i = 0;
+
+	while(monster != NULL) {
+
+		i++;
+
+		monster = monster->next;
+	}
+
+	return i;
+}
+
+void monster_debug(struct monster* monster) {
+
+	assert(monster);
+
+	while(monster != NULL) {
+
+		printf("x:%i / y:%i / life:%i \n", monster->x, monster->y, monster->life);
+
+		monster = monster->next;
+	}
+}
+
 void monster_free(struct monster* monster) {
 	assert(monster);
 	free(monster);

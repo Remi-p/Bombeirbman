@@ -38,6 +38,10 @@ struct player* player_init(int bomb_number) {
 	return player;
 }
 
+int player_sizeof() {
+	return sizeof(struct player);
+}
+
 void player_free(struct player* player) {
 	assert(player);
 	free(player);

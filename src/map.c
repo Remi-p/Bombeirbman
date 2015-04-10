@@ -233,6 +233,42 @@ void display_scenery(struct map* map, int x, int  y, unsigned char type)
 	}
 }
 
+void load_map(struct map* map, FILE* fLoadFile) {
+	assert(map != NULL);
+	assert(map->height > 0 && map->width > 0);
+
+	unsigned char cell;
+	for (int i = 0; i < map->width; i++) {
+		for (int j = 0; j < map->height; j++) {
+
+			fread(&cell, sizeof(unsigned char), 1, fLoadFile);
+
+			map->grid[CELL(i,j)] = cell;
+
+		}
+
+	}
+
+}
+
+void save_map(struct map* map, FILE* fSaveFile) {
+	assert(map != NULL);
+	assert(map->height > 0 && map->width > 0);
+
+	unsigned char cell;
+	for (int i = 0; i < map->width; i++) {
+		for (int j = 0; j < map->height; j++) {
+
+			cell = map->grid[CELL(i,j)];
+
+			fwrite(&cell, sizeof(unsigned char), 1, fSaveFile);
+
+		}
+
+	}
+
+}
+
 void map_display(struct map* map)
 {
 	assert(map != NULL);

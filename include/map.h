@@ -1,6 +1,7 @@
 #ifndef MAP_H_
 #define MAP_H_
 
+#include <stdio.h>
 // For directions
 #include <constant.h>
 
@@ -93,6 +94,12 @@ int map_is_inside(struct map* map, int x, int y);
 
 // Return a default 12x12 static map
 struct map* map_get_default();
+
+// Load a map
+void load_map(struct map* map, FILE* fSaveFile);
+
+// Save a map
+void save_map(struct map* map, FILE* fSaveFile);
 
 // Display the map on the screen
 void map_display(struct map* map);

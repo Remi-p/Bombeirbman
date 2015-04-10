@@ -67,7 +67,7 @@
 
 // Sprites of game states
 #define IMG_STATE_COMPLETED "sprite/completed.png"
-#define IMG_VICTORY 		"sprite/victory.png"
+#define IMG_STATE_VICTORY 	"sprite/victory.png"
 #define IMG_MENU_1			"sprite/first_menu.png"
 #define IMG_MENU_2			"sprite/second_menu.png"
 #define IMG_GAME_OVER		"sprite/game_over.png"
@@ -92,7 +92,7 @@ SDL_Surface* bomb_img[4];
 SDL_Surface* fire[2];
 SDL_Surface* completed;
 SDL_Surface* menu[3];
-SDL_Surface* victory;
+SDL_Surface* state_victory;
 
 // bonus
 #define NB_BONUS 5
@@ -156,7 +156,7 @@ void map_unload() {
 
 void state_load() {
 	completed = load_image(IMG_STATE_COMPLETED);
-	//victory = load_image(IMG_VICTORY);
+//	state_victory = load_image(IMG_STATE_VICTORY);
 	menu[0] = load_image(IMG_MENU_1);
 	menu[1] = load_image(IMG_MENU_2);
 	menu[2] = load_image(IMG_GAME_OVER);
@@ -164,7 +164,7 @@ void state_load() {
 
 void state_unload() {
 	SDL_FreeSurface(completed);
-	//SDL_FreeSurface(victory);
+	SDL_FreeSurface(state_victory);
 	SDL_FreeSurface(menu[0]);
 	SDL_FreeSurface(menu[1]);
 	SDL_FreeSurface(menu[2]);
