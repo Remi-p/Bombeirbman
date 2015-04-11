@@ -234,8 +234,7 @@ void display_scenery(struct map* map, int x, int  y, unsigned char type)
 }
 
 void load_map(struct map* map, FILE* fLoadFile) {
-	assert(map != NULL);
-	assert(map->height > 0 && map->width > 0);
+	assert(map != NULL && map->height > 0 && map->width > 0);
 
 	unsigned char cell;
 	for (int i = 0; i < map->width; i++) {

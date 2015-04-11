@@ -38,17 +38,28 @@ struct game* game_new(void) {
 }
 
 void game_free(struct game* game) {
+
 	assert(game);
 
+	// Free space
 	player_free(game->player);
 	level_free(game->curr_level);
 	delete_bombs(game->bomb);
 	kill_the_monsters(game->monster);
+
+	// Addresse = NULL
+	game->player = NULL;
+	game->curr_level = NULL;
+	game->bomb = NULL;
+	game->monster = NULL;
 }
 
 void game_default(struct game* game) {
 
+	assert(game);
+
 	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
+
 	game->bomb = NULL;
 	game->state_timer = 0;
 	game->multiplayer = 0;
@@ -62,14 +73,84 @@ void game_reset(struct game* game) {
 
 	game_free(game);
 
-	game_default(game);
-
 	game->curr_level = level_get_level(1);
-
+	game_default(game);
 	game->player = player_init(NB_BOMBS);
 	game->game_state = STATE_FIRST_MENU;
 	player_from_map(game->player, level_get_map(game->curr_level, 0));
 
+
+}
+
+void save_game(struct game game) {
+	//assert(game);
+
+	// From :
+	// http://www.gamedev.net/topic/633653-save-and-read-data-from-file/#entry4995912
+	// http://stackoverflow.com/questions/13330482/reading-and-writing-a-mallocd-linked-list-from-to-a-binary-file
+
+	// Open the file for writing binary
+	FILE *fSaveFile = fopen("data/last_save.bin", "wb");
+
+	if (fSaveFile) {
+		// Write the structure to the file
+
+		// --------- Here is the file format : -----------
+		// struct player
+		// int : corresponding to the level number
+		// int : corresponding to the map number
+		// char : corresponding to all the cells (n times)
+		// -----------------------------------------------
+		// Note: Monsters and bombs are coded in the map.
+		// Game variable is reset using the others variables
+
+		fwrite(game.player, player_sizeof(), 1, fSaveFile);
+
+		level_save(game.curr_level, fSaveFile);
+
+		fclose(fSaveFile);
+	}
+	else {
+		printf("Error opening savefile!\n");
+		exit(0);
+	}
+}
+
+void load_game(struct game* game) {
+
+	assert(game);
+
+	// Open the file for reading binary
+	FILE *fLoadFile = fopen("data/last_save.bin", "rb");
+
+	if (fLoadFile) {
+
+		game_free(game);
+
+		// Load : player
+		game->player = player_init(NB_BOMBS);
+		fread(game->player, player_sizeof(), 1, fLoadFile);
+
+		// Load : maps from the level number
+		int level_number;
+		fread(&level_number, sizeof(int), 1, fLoadFile);
+		game->curr_level = level_get_level(level_number);
+
+		// Load : modified map
+		level_load(game->curr_level, fLoadFile);
+
+		// Reset values (and load monsters)
+		game_default(game);
+
+		// Load bombs
+		game->bomb = bomb_from_map(level_get_curr_map(game->curr_level), game->player);
+
+		fclose(fLoadFile);
+
+	}
+	else {
+		printf("Error opening savefile!\n");
+	}
 
 }
 
@@ -181,6 +262,10 @@ short menu_input_keyboard(struct game* game) {
 					case SDLK_s:
 						game->game_state = STATE_GAME;
 						break;
+					case SDLK_c:
+						load_game(game);
+						game->game_state = STATE_GAME;
+						break;
 				}
 
 				else if (game->game_state == STATE_GAME_OVER) {
@@ -209,83 +294,6 @@ short menu_input_keyboard(struct game* game) {
 	}
 
 	return 0;
-
-}
-
-void save_game(struct game game) {
-
-	// From :
-	// http://www.gamedev.net/topic/633653-save-and-read-data-from-file/#entry4995912
-	// That will probably works : http://stackoverflow.com/questions/13330482/reading-and-writing-a-mallocd-linked-list-from-to-a-binary-file
-	// (making everything one after the other)
-
-	// Open the file for writing binary
-	FILE *fSaveFile = fopen("data/last_save.bin", "wb");
-
-	if (fSaveFile) {
-		// Write the structure to the file
-
-		// --------- Here is the file format : -----------
-		// struct game
-		// struct player
-		// int : corresponding to the number of monsters // TODELETE (coded in map)
-		// struct monster (n times)						 // TODELETE
-		// int : corresponding to the number of bombs	 // TODELETE
-		// struct bomb (n times)						 // TODELETE (Will be in the second part of map coding)
-		// int : corresponding to the level number
-		// int : corresponding to the map number
-		// char : corresponding to all the cells (n times)
-		// -----------------------------------------------
-
-		fwrite(&game, sizeof(struct game), 1, fSaveFile);
-
-		fwrite(game.player, player_sizeof(), 1, fSaveFile);
-
-		level_save(game.curr_level, fSaveFile);
-
-		fclose(fSaveFile);
-	}
-	else {
-		printf("Error opening savefile!\n");
-		exit(0);
-	}
-}
-
-void load_game(struct game* game) {
-
-	// Open the file for reading binary
-	FILE *fLoadFile = fopen("data/last_save.bin", "rb");
-
-	if (fLoadFile) {
-		// read the structure from the file
-		game_free(game);
-
-		fread(game, sizeof(struct game), 1, fLoadFile);
-
-		game->player = player_init(NB_BOMBS);
-		// struct player* player = player_init(NB_BOMBS);
-
-		fread(game->player, player_sizeof(), 1, fLoadFile);
-
-		// Load maps from the level number
-		int level_number;
-		fread(&level_number, sizeof(int), 1, fLoadFile);
-
-		game->curr_level = level_get_level(level_number);
-		level_load(game->curr_level, fLoadFile);
-
-		// Reset values
-		game_default(game);
-
-		// Load bombs
-		game->bomb = bomb_from_map(level_get_curr_map(game->curr_level), game->player);
-
-		fclose(fLoadFile);
-
-	}
-	else {
-		printf("Error opening savefile!\n");
-	}
 
 }
 
@@ -440,7 +448,6 @@ int state_game_update(struct game* game) {
 
 		// Updating bombs
 		if (bombs_update(level_get_curr_map(game->curr_level), game->bomb, game->player, game->monster)) {
-			free(game->bomb);
 			game->bomb = NULL;
 		}
 	}

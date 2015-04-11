@@ -16,6 +16,8 @@ struct bomb {
 };
 
 struct bomb* bomb_init(int x, int y, struct bomb* next, short portee, struct player* player) {
+	assert(player);
+
 	struct bomb* bomb = malloc(sizeof(*bomb));
 	if (!bomb)
 		error("Memory error");
@@ -34,20 +36,21 @@ struct bomb* bomb_init(int x, int y, struct bomb* next, short portee, struct pla
 struct bomb* bomb_from_map(struct map* map, struct player* player) {
 
 	assert(map);
-
-	/* Initialize random number generator */
+	assert(player);
 
 	struct bomb* bomb_previous = NULL;
 
 	int i, j;
 	for (i = 0; i < map_get_width(map); i++) {
 		for (j = 0; j < map_get_height(map); j++) {
-			if (map_get_cell_type(map, i, j) == CELL_MONSTER) {
+			if (map_get_cell_type(map, i, j) == CELL_BOMB) {
 
 				// If a loading is made, it's in one player mode
-				// So we give it the adresse of the only available player
-				bomb_previous = bomb_init(i, j, bomb_previous, player->portee, player);
-				// TODO : erreur: déréférencement d'un pointeur de type incomplet
+				// So we give it the addresse of the only available player
+				bomb_previous = bomb_init(i, j, bomb_previous, player_get_scope(player), player);
+
+				// And also we decode the approximation of time left
+				bomb_previous->time = (BOMB / 15) * map_get_bonus_type(map, i, j);
 
 			}
 		}
@@ -75,26 +78,25 @@ void delete_bombs(struct bomb* bomb) {
 
 	struct bomb* previous = NULL;
 
-	if (bomb != NULL) {
-		while(bomb->next != NULL) {
+	while(bomb != NULL) {
 
-			previous = bomb;
-			bomb = bomb->next;
+		previous = bomb;
 
-			if (previous != NULL)
-				free(previous);
+		if (previous != NULL)
+			free(previous);
 
-		}
+		bomb = bomb->next;
 	}
 
-	if (previous != NULL)
-		free(previous);
+
 }
 
 short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* player) {
 
 	assert(player);
 	assert(bomb);
+
+	//printf("Adresse de la bomb précédente : %p\nAdresse de la bomb actuelle : %p\nAdresse de la bomb suivante : %p\n\n", previous, bomb, bomb->next);
 
 	player_inc_nb_bomb_now(player);
 
@@ -160,7 +162,6 @@ short exp_fire(struct map* map, int x, int y, struct player* player, struct mons
 	kill_the_monster_here(monster, x, y);
 
 	add_fire_to_map(map, x, y, FIRE);
-	//map_set_cell_type(map, x, y, CELL_TREE);
 
 	return 1;
 
@@ -204,9 +205,11 @@ void explosion(struct map* map, int x, int y, short portee, struct player* playe
 
 short bombs_update(struct map* map, struct bomb* bomb, struct player* player, struct monster* monster) {
 
+	assert(map);
 	assert(player);
 
 	struct bomb* previous = NULL;
+	struct bomb* next = NULL;
 
 	while(bomb != NULL) {
 
@@ -221,15 +224,21 @@ short bombs_update(struct map* map, struct bomb* bomb, struct player* player, st
 
 			// We use compose_type for saving an approximation of the remaining time (in case of saving)
 			map_set_compose_type(map, bomb->x, bomb->y, CELL_BOMB, time);
+
+			previous = bomb;
+			bomb = bomb->next;
 		}
 		else {
 			map_set_cell_type(map, bomb->x, bomb->y, CELL_EMPTY);
 			explosion(map, bomb->x, bomb->y, bomb->portee, player, monster);
-			if (bomb_explode(previous, bomb, player)) return 1;
-		}
 
-		previous = bomb;
-		bomb = bomb->next;
+			// 'Incrementing' the loop
+			next = bomb->next;
+
+			if (bomb_explode(previous, bomb, player)) return 1;
+
+			bomb = next;
+		}
 
 	}
 
@@ -238,6 +247,7 @@ short bombs_update(struct map* map, struct bomb* bomb, struct player* player, st
 }
 
 void bomb_display(struct bomb* bomb) {
+
 	assert(bomb);
 
 	short type;

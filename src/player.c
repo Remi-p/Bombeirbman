@@ -304,6 +304,7 @@ static int player_move_aux(struct player* player, struct map* map, int x, int y)
 
 int player_move(struct player* player, struct map* map) {
 	assert(player);
+	assert(map);
 
 	int x = player->x;
 	int y = player->y;
@@ -352,6 +353,7 @@ int player_move(struct player* player, struct map* map) {
 
 void player_display(struct player* player) {
 	assert(player);
+
 	window_display_image(sprite_get_player(player->current_direction),
 			player->x * SIZE_BLOC, player->y * SIZE_BLOC);
 }
