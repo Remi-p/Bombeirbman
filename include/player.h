@@ -71,7 +71,7 @@ struct bomb* create_bomb(struct map* map, struct bomb* previous, struct player* 
 void player_on_monster(struct player* player, struct monster* monster, struct map* map);
 
 // Load the player position from the map
-void player_from_map(struct player* player, struct map* map);
+void player_from_map(struct player* player, struct map* map, short second);
 
 // Do the actions when the player is on an item
 void player_on_bonus(struct player* player, struct map* map, int x, int y);

@@ -105,7 +105,7 @@ void save_map(struct map* map, FILE* fSaveFile);
 void map_display(struct map* map);
 
 // Extract the data from a file
-struct map* map_from_file(int niveau, int carte);
+struct map* map_from_file(int niveau, int carte, short multi);
 
 // Move a case to a given direction
 int case_move(enum direction current_dir, int x, int y, struct map* map);

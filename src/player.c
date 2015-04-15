@@ -43,6 +43,9 @@ int player_sizeof() {
 }
 
 void player_free(struct player* player) {
+
+	if (player == NULL) return;
+
 	assert(player);
 	free(player);
 }
@@ -194,16 +197,22 @@ void player_on_monster(struct player* player, struct monster* monster, struct ma
 
 }
 
-void player_from_map(struct player* player, struct map* map) {
+void player_from_map(struct player* player, struct map* map, short second) {
 	assert(player);
 	assert(map);
+
 
 	int i, j;
 	for (i = 0; i < map_get_width(map); i++) {
 		for (j = 0; j < map_get_height(map); j++) {
 			if (map_get_cell_type(map, i, j) == CELL_PLAYER) {
-				player->x = i;
-				player->y = j;
+
+				// We need to check if this is the second player or not
+				if (second) second = 0;
+				else {
+					player->x = i;
+					player->y = j;
+				}
 			}
 		}
 	}

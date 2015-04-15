@@ -17,22 +17,11 @@ struct level {
 	int number; // which number corresponds to this level
 };
 
-struct level* level_get_level(int num) {
+struct level* level_get_level(int num, short multi) {
 	struct level* level = malloc(sizeof(*level));
 
-	/*
-	switch (num) {
-	case 0:
-		level->nb_maps = 1;
-		level->cur_map = 0;
-		level->maps = malloc(sizeof(*level->maps));
-		level->maps[0] = map_get_default();
-		return level;
-		break;
-	}*/
-
 	level->number = num;
-	level->nb_maps = count_maps(num, 0);
+	level->nb_maps = count_maps(num, 0, multi);
 	level->cur_map = 0;
 	// We allocate the first layer of the array
 	level->maps = malloc(sizeof(*level->maps));
@@ -40,7 +29,7 @@ struct level* level_get_level(int num) {
 	for	(int i = 0; i <= (level->nb_maps-1); i++) {
 
 		// Second allocation
-		level->maps[i] = map_from_file(num, (i+1));
+		level->maps[i] = map_from_file(num, (i+1), multi);
 
 	}
 
@@ -94,13 +83,17 @@ int next_level_number(struct level* level) {
 	return level->number + 1;
 }
 
-short count_maps(int level, int map) {
+short count_maps(int level, int map, short multi) {
 
-	// Check how many maps there is on the level
-	char *filename = malloc(strlen("data/map_00_00"));
+	// Check how many maps there is on the level or in multiplayer mode
+	char *filename;
+	if (multi) 	filename = malloc(strlen("data/map_multi_00"));
+	else 		filename = malloc(strlen("data/map_00_00"));
 
 	if (map != 0) { // A specific map has been given
-		sprintf(filename, "data/map_%i_%i", level, map);
+
+		if (multi) 	sprintf(filename, "data/map_multi_%i", map);
+		else 		sprintf(filename, "data/map_%i_%i", level, map);
 
 		if( access( filename, F_OK ) != -1 ) {
 			// Exist
@@ -112,12 +105,17 @@ short count_maps(int level, int map) {
 	}
 	else { // We want the number of available maps
 		short i = 1;
-		sprintf(filename, "data/map_%i_%i", level, i);
+
+		if (multi) 	sprintf(filename, "data/map_multi_%i", i);
+		else 		sprintf(filename, "data/map_%i_%i", level, i);
 
 		// As long as we have a file, we continue
 		while (access( filename, F_OK ) != -1) {
 			i++;
-			sprintf(filename, "data/map_%i_%i", level, i);
+
+			if (multi) 	sprintf(filename, "data/map_multi_%i", i);
+			else 		sprintf(filename, "data/map_%i_%i", level, i);
+
 		}
 		return (i-1);
 	}

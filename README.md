@@ -2,6 +2,65 @@
 
 ## Modifications
 
+### 11.04.15
+
+* *src/level.c*
+* *src/map.c*
+* *src/player.c*
+* *src/bomb.c*
+	* Adding all the `assert`
+	* Bugs correction
+* *src/game.c*
+	* Bugs correction
+	* Finalizing quick save
+
+### 10.04.15
+
+* *data/*
+* *include/bomb.h*
+* *include/level.h*
+* *include/map.h*
+* *include/monster.h*
+* *include/player.h*
+* *src/sprite.c*
+* *src/bomb.c*
+	* Saving an approximation of bomb time remaining in map
+	* `bomb_from_map` for loading map-coded bombs
+* *src/game.c*
+	* Function for default value
+	* `save_game` and `load_game`
+* *src/level.c*
+	* Saving and loading level
+* *src/map.c*
+	* Saving and loading map
+* *src/monster.c*
+	* Miscellaneous functions
+* *src/player.c*
+	* `player_sizeof` for the saving part (game.c doesn't know the structure size)
+
+### 04.04.15
+
+* *include/constant.h*
+* *include/game.h*
+* *include/player.h*
+* *include/sprite.h*
+* *src/map.c*
+* *src/bomb.c*
+	* Rewriting the freeing of bombs
+	* Adding all the `assert`
+* *src/game.c*
+	* Support for game state
+	* Functions for reseting the game
+	* Separating all the states (menu, splashscreen, game) with
+	* Separating functionnalities (input keyboard, displaying)
+* *src/level.c*
+	* Automatic count for maps
+* *src/player.c*
+	* Adding all the `assert`
+	* Support for death splashscreen
+* *src/sprite.c*
+	* Displaying menus & splashscreens
+
 ### 03.04.15
 
 * *include/bomb.h*

@@ -309,7 +309,7 @@ void map_display(struct map* map)
 	}
 }
 
-struct map* map_from_file(int niveau, int carte) {
+struct map* map_from_file(int niveau, int carte, short multi) {
 
 	// Mainly inspirated by :
 	// http://stackoverflow.com/questions/1658530/load-numbers-from-text-file-in-c
@@ -317,10 +317,16 @@ struct map* map_from_file(int niveau, int carte) {
 
 	char buf[FIRST_LINE_WIDTH];
 	FILE *map_txt;
-
+	char *filename;
 	 // Allocate a string with enough space for the filename
-	char *filename = malloc(strlen("data/map_00_00"));
-	sprintf(filename, "data/map_%i_%i", niveau, carte);
+	if (multi) {
+		filename = malloc(strlen("data/map_multi_00"));
+		sprintf(filename, "data/map_multi_%i", carte);
+	}
+	else {
+		filename = malloc(strlen("data/map_00_00"));
+		sprintf(filename, "data/map_%i_%i", niveau, carte);
+	}
 
 	map_txt = fopen(filename, "r");
 
@@ -392,7 +398,7 @@ struct map* map_get_default(void)
 		};
 		*/
 
-	return map_from_file(1,1);
+	return map_from_file(1,1,0);
 }
 
 static int case_move_aux(struct map* map, int x, int y) {

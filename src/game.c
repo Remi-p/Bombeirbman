@@ -9,6 +9,7 @@
 struct game {
 	struct level* curr_level; // current level
 	struct player* player;
+	struct player* player_2; // Will only be available in multiplayer
 	struct monster* monster;
 	struct bomb* bomb;
 	int state_timer;
@@ -18,21 +19,31 @@ struct game {
 	short multiplayer;
 };
 
+void game_default(struct game* game) {
+
+	assert(game);
+
+	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
+
+	game->bomb = NULL;
+	game->state_timer = 0;
+	game->pause = 0;
+
+}
+
 struct game* game_new(void) {
 	sprite_load(); // load sprites into process memory
 
 	struct game* game = malloc(sizeof(*game));
-	game->curr_level = level_get_level(1); // get maps of the first level
+	game->curr_level = level_get_level(1, game->multiplayer); // get maps of the first level
 
+	game_default(game);
 	game->player = player_init(NB_BOMBS);
-	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
-	game->bomb = NULL;
-	game->state_timer = 0;
+	game->player_2 = NULL;
 	game->game_state = STATE_FIRST_MENU;
 	game->multiplayer = 0;
-	player_from_map(game->player, level_get_map(game->curr_level, 0)); // get x,y of the player on the first map
+	player_from_map(game->player, level_get_map(game->curr_level, 0), 0); // get x,y of the player on the first map
 
-	game->pause = 0;
 
 	return game;
 }
@@ -43,41 +54,38 @@ void game_free(struct game* game) {
 
 	// Free space
 	player_free(game->player);
+	player_free(game->player_2);
 	level_free(game->curr_level);
 	delete_bombs(game->bomb);
 	kill_the_monsters(game->monster);
 
 	// Addresse = NULL
 	game->player = NULL;
+	game->player_2 = NULL;
 	game->curr_level = NULL;
 	game->bomb = NULL;
 	game->monster = NULL;
 }
 
-void game_default(struct game* game) {
-
-	assert(game);
-
-	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
-
-	game->bomb = NULL;
-	game->state_timer = 0;
-	game->multiplayer = 0;
-	game->pause = 0;
-
-}
-
-void game_reset(struct game* game) {
+void game_reset(struct game* game, short multiplayer) {
 
 	assert(game);
 
 	game_free(game);
 
-	game->curr_level = level_get_level(1);
+	game->curr_level = level_get_level(1, multiplayer);
 	game_default(game);
+
 	game->player = player_init(NB_BOMBS);
+	if (multiplayer) game->player_2 = player_init(NB_BOMBS);
+	else			 game->player_2 = NULL;
+	// TODO : Second player;
+
+	player_from_map(game->player, level_get_map(game->curr_level, 0), 0);
+	if (multiplayer) player_from_map(game->player_2, level_get_map(game->curr_level, 0), 1);
+
 	game->game_state = STATE_FIRST_MENU;
-	player_from_map(game->player, level_get_map(game->curr_level, 0));
+	game->multiplayer = multiplayer;
 
 
 }
@@ -134,7 +142,7 @@ void load_game(struct game* game) {
 		// Load : maps from the level number
 		int level_number;
 		fread(&level_number, sizeof(int), 1, fLoadFile);
-		game->curr_level = level_get_level(level_number);
+		game->curr_level = level_get_level(level_number, game->multiplayer);
 
 		// Load : modified map
 		level_load(game->curr_level, fLoadFile);
@@ -216,11 +224,14 @@ void game_display(struct game* game) {
 
 	window_clear();
 
-	game_banner_display(game);
+	if (!game->multiplayer)
+		game_banner_display(game);
 	level_display(game_get_curr_level(game));
 	bombs_display(game->bomb);
 	if (player_is_vis(game->player))
 		player_display(game->player);
+	if (game->player_2 != NULL && player_is_vis(game->player_2))
+		player_display(game->player_2);
 	monsters_display(game->monster);
 	display_fire(level_get_curr_map(game_get_curr_level(game)));
 
@@ -241,15 +252,20 @@ short menu_input_keyboard(struct game* game) {
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
 
+				//TODO : if statements not working?
 				if (game->game_state == STATE_FIRST_MENU) {
 
 					case SDLK_o:
 					case SDLK_0:
-						game->multiplayer = 0;
+						if (game->multiplayer != 0) {
+							game_reset(game, 0);
+						}
 						game->game_state = STATE_SECOND_MENU;
 						break;
 					case SDLK_t:
-						game->multiplayer = 1;
+						if (game->multiplayer != 1) {
+							game_reset(game, 1);
+						}
 						game->game_state = STATE_SECOND_MENU;
 						break;
 				}
@@ -303,6 +319,7 @@ short game_input_keyboard(struct game* game) {
 
 	SDL_Event event;
 	struct player* player = game_get_player(game);
+	struct player* player_2 = game->player_2;
 	struct map* map = level_get_curr_map(game_get_curr_level(game));
 	int move = 0;
 
@@ -359,6 +376,26 @@ short game_input_keyboard(struct game* game) {
 					case SDLK_SPACE:
 						game->bomb = create_bomb(level_get_curr_map(game->curr_level), game->bomb, game->player);
 						break;
+					// Second player
+					case SDLK_z:
+						player_set_current_way(player_2, NORTH);
+						move = player_move(player_2, map);
+						break;
+					case SDLK_s:
+						player_set_current_way(player_2, SOUTH);
+						move = player_move(player_2, map);
+						break;
+					case SDLK_d:
+						player_set_current_way(player_2, EAST);
+						move = player_move(player_2, map);
+						break;
+					case SDLK_q:
+						player_set_current_way(player_2, WEST);
+						move = player_move(player_2, map);
+						break;
+					case SDLK_w:
+						game->bomb = create_bomb(level_get_curr_map(game->curr_level), game->bomb, game->player_2);
+						break;
 					default:
 						break;
 				}
@@ -382,19 +419,19 @@ void next_map(struct game* game) {
 
 	if (level_continu(game->curr_level)) { // This condition also change the map
 
-		player_from_map(game->player, level_get_curr_map(game->curr_level));
+		player_from_map(game->player, level_get_curr_map(game->curr_level), 0);
 	}
-	else if (count_maps(next_level_number(game->curr_level), 1)) {
+	else if (count_maps(next_level_number(game->curr_level), 1, game->multiplayer)) {
 
 		// Changing the level
 		level_free(game->curr_level);
 		game->game_state = STATE_LEVEL_COMPLETED;
 		game->state_timer = SPLASH_SCREEN;
-		game->curr_level = level_get_level(next_level_number(game->curr_level));
+		game->curr_level = level_get_level(next_level_number(game->curr_level), game->multiplayer);
 	}
 	else {
 
-		game_reset(game);
+		game_reset(game, game->multiplayer);
 		game->state_timer = 2 * SPLASH_SCREEN;
 		game->game_state = STATE_VICTORY;
 
@@ -442,8 +479,12 @@ int state_game_update(struct game* game) {
 
 		// Updating player (and displaying 'game over' if needed)
 		if (player_update(level_get_curr_map(game->curr_level), game->player)) {
-			game_reset(game);
+			game_reset(game, game->multiplayer);
 			game->game_state = STATE_GAME_OVER;
+		}
+
+		if (game->multiplayer && game->player_2 != NULL) {
+			player_update(level_get_curr_map(game->curr_level), game->player_2);
 		}
 
 		// Updating bombs
@@ -471,7 +512,7 @@ void state_level_comp(struct game* game) {
 		}
 		else {
 			game->game_state = STATE_GAME;
-			player_from_map(game->player, level_get_curr_map(game->curr_level));
+			player_from_map(game->player, level_get_curr_map(game->curr_level), 0);
 		}
 
 	}
