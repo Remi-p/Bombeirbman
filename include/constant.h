@@ -37,6 +37,8 @@
 // Splash screen time (like level completed)
 #define SPLASH_SCREEN 50
 
+#define SAVEGAME "data/last_save.bin"
+
 enum direction {
 	NORTH = 0,
 	SOUTH, // 1

@@ -6,6 +6,9 @@
 #include <bomb.h>
 #include <level.h>
 
+// Test of existence for savegame
+extern short savefile_exist;
+
 // State of the game
 enum game_state {
 	STATE_GAME=0,

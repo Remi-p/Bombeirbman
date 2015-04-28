@@ -91,14 +91,13 @@ void delete_bombs(struct bomb* bomb) {
 
 }
 
-short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* player) {
+short bomb_explode(struct bomb* previous, struct bomb* bomb) {
 
-	assert(player);
 	assert(bomb);
 
 	//printf("Adresse de la bomb précédente : %p\nAdresse de la bomb actuelle : %p\nAdresse de la bomb suivante : %p\n\n", previous, bomb, bomb->next);
 
-	player_inc_nb_bomb_now(player);
+	player_inc_nb_bomb_now(bomb->player);
 
 	// It's not the first of the list
 	if (previous != NULL) {
@@ -117,7 +116,7 @@ short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* play
 
 }
 
-short exp_fire(struct map* map, int x, int y, struct player* player, struct monster* monster) {
+short exp_fire(struct map* map, int x, int y, struct player* player, struct player* player_2, struct monster* monster) {
 
 	assert(player);
 	assert(map);
@@ -159,6 +158,7 @@ short exp_fire(struct map* map, int x, int y, struct player* player, struct mons
 	}
 
 	fire_in_the_hole(player, x, y);
+	if (player_2 != NULL) fire_in_the_hole(player_2, x, y);
 	kill_the_monster_here(monster, x, y);
 
 	add_fire_to_map(map, x, y, FIRE);
@@ -167,7 +167,7 @@ short exp_fire(struct map* map, int x, int y, struct player* player, struct mons
 
 }
 
-void explosion(struct map* map, int x, int y, short portee, struct player* player, struct monster* monster) {
+void explosion(struct map* map, int x, int y, short portee, struct player* player, struct player* player_2, struct monster* monster) {
 
 	assert(map);
 	assert(player);
@@ -175,14 +175,14 @@ void explosion(struct map* map, int x, int y, short portee, struct player* playe
 	int x_dir, y_dir;
 	int x_move, y_move;
 
-	exp_fire(map, x, y, player, monster);
+	exp_fire(map, x, y, player, player_2, monster);
 
 	y_move = 0;
 	for (x_dir = -1 ; x_dir <= 1 ; x_dir = x_dir + 2) { // Loop for x-direction
 
 		for (x_move = x_dir ; x_move*x_dir <= x_dir*portee*x_dir ; x_move = x_move + x_dir) {
 
-			if (!exp_fire(map, x + x_move, y + y_move, player, monster))
+			if (!exp_fire(map, x + x_move, y + y_move, player, player_2, monster))
 				break;
 
 		}
@@ -194,7 +194,7 @@ void explosion(struct map* map, int x, int y, short portee, struct player* playe
 
 		for (y_move = y_dir ; y_move*y_dir <= y_dir*y_dir*portee ; y_move = y_move + y_dir) {
 
-			if (!exp_fire(map, x + x_move, y + y_move, player, monster))
+			if (!exp_fire(map, x + x_move, y + y_move, player, player_2, monster))
 				break;
 
 		}
@@ -203,7 +203,7 @@ void explosion(struct map* map, int x, int y, short portee, struct player* playe
 
 }
 
-short bombs_update(struct map* map, struct bomb* bomb, struct player* player, struct monster* monster) {
+short bombs_update(struct map* map, struct bomb* bomb, struct player* player, struct player* player_2, struct monster* monster) {
 
 	assert(map);
 	assert(player);
@@ -230,12 +230,12 @@ short bombs_update(struct map* map, struct bomb* bomb, struct player* player, st
 		}
 		else {
 			map_set_cell_type(map, bomb->x, bomb->y, CELL_EMPTY);
-			explosion(map, bomb->x, bomb->y, bomb->portee, player, monster);
+			explosion(map, bomb->x, bomb->y, bomb->portee, player, player_2, monster);
 
 			// 'Incrementing' the loop
 			next = bomb->next;
 
-			if (bomb_explode(previous, bomb, player)) return 1;
+			if (bomb_explode(previous, bomb)) return 1;
 
 			bomb = next;
 		}

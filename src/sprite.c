@@ -71,6 +71,7 @@
 #define IMG_MENU_1			"sprite/first_menu.png"
 #define IMG_MENU_2			"sprite/second_menu.png"
 #define IMG_GAME_OVER		"sprite/game_over.png"
+#define IMG_MENU_2_H		"sprite/second_menu_hide.png"
 
 // banner
 SDL_Surface* numbers[10];
@@ -92,6 +93,7 @@ SDL_Surface* bomb_img[4];
 SDL_Surface* fire[2];
 SDL_Surface* completed;
 SDL_Surface* menu[3];
+SDL_Surface* menu_hide;
 SDL_Surface* state_victory;
 
 // bonus
@@ -160,6 +162,7 @@ void state_load() {
 	menu[0] = load_image(IMG_MENU_1);
 	menu[1] = load_image(IMG_MENU_2);
 	menu[2] = load_image(IMG_GAME_OVER);
+	menu_hide = load_image(IMG_MENU_2_H);
 }
 
 void state_unload() {
@@ -168,6 +171,7 @@ void state_unload() {
 	SDL_FreeSurface(menu[0]);
 	SDL_FreeSurface(menu[1]);
 	SDL_FreeSurface(menu[2]);
+	SDL_FreeSurface(menu_hide);
 }
 
 void fire_load() {
@@ -280,6 +284,10 @@ SDL_Surface* sprite_get_monster(enum direction direction) {
 SDL_Surface* sprite_get_bomb(short type) {
 	assert(bomb_img[type]);
 	return bomb_img[type];
+}
+
+SDL_Surface* sprite_get_menu_h() {
+	return menu_hide;
 }
 
 SDL_Surface* sprite_get_menu(short type) {

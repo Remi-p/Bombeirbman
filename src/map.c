@@ -51,6 +51,25 @@ struct map* map_new(int width, int height)
 	return map;
 }
 
+void map_debug(struct map* map) {
+
+	int i, j;
+
+	printf("Map of %i by %i :\n", map->width, map->height);
+
+	for (i = 0; i < map_get_width(map); i++) {
+		for (j = 0; j < map_get_height(map); j++) {
+
+			printf("%i|", map_get_cell_type(map, i, j));
+
+		}
+
+		printf("\n");
+	}
+
+	printf("\n");
+}
+
 int map_is_inside(struct map* map, int x, int y)
 {
 	assert(map);

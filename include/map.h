@@ -92,6 +92,9 @@ short is_there_fire(struct map* map, int x, int y);
 // Test if (x,y) is within the map
 int map_is_inside(struct map* map, int x, int y);
 
+// Display informations about a map
+void map_debug(struct map* map);
+
 // Return a default 12x12 static map
 struct map* map_get_default();
 

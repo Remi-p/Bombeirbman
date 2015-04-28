@@ -12,6 +12,7 @@ SDL_Surface* sprite_get_player(enum direction direction);
 SDL_Surface* sprite_get_monster(enum direction direction);
 SDL_Surface* sprite_get_bomb(short type);
 SDL_Surface* sprite_get_menu(short type);
+SDL_Surface* sprite_get_menu_h();
 SDL_Surface* sprite_get_bonus(enum bonus_type bonus_type);
 SDL_Surface* sprite_get_fire(short type);
 SDL_Surface* sprite_get_completed();

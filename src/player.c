@@ -42,6 +42,19 @@ int player_sizeof() {
 	return sizeof(struct player);
 }
 
+void player_debug(struct player* player) {
+
+	printf("Player:\n");
+
+	printf("Address:%p\n", player);
+	printf("x:%i / y:%i / dir:%i\n", player->x, player->y, player->current_direction);
+	printf("nb_bmb:%i / nb_bmb_now:%i / portee:%i\n", player->nb_bomb, player->nb_bomb_now, player->portee);
+	printf("life:%i / inv:%i / vis:%i\n", player->life, player->invincibility, player->visible);
+	printf("clee:%i / next_level:%i\n", player->clee, player->next_level);
+
+	printf("\n");
+}
+
 void player_free(struct player* player) {
 
 	if (player == NULL) return;
@@ -148,6 +161,12 @@ short player_has_key(struct player* player) {
 	return player->clee;
 }
 
+void player_set_next_lvl(struct player* player, short next_level) {
+	assert(player);
+
+	player->next_level = next_level;
+}
+
 short player_next_level(struct player* player) {
 	assert(player);
 
@@ -201,21 +220,23 @@ void player_from_map(struct player* player, struct map* map, short second) {
 	assert(player);
 	assert(map);
 
-
 	int i, j;
 	for (i = 0; i < map_get_width(map); i++) {
 		for (j = 0; j < map_get_height(map); j++) {
+
 			if (map_get_cell_type(map, i, j) == CELL_PLAYER) {
 
 				// We need to check if this is the second player or not
-				if (second) second = 0;
-				else {
+				if (!second) {
 					player->x = i;
 					player->y = j;
+					return;
 				}
+				else second = 0;
 			}
 		}
 	}
+
 }
 
 void player_on_bonus(struct player* player, struct map* map, int x, int y) {

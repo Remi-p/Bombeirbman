@@ -58,8 +58,6 @@ void level_load(struct level* level, FILE* fLoadFile) {
 
 	level->cur_map = cur_map;
 
-	printf("Level nb : %i // Map nb : %i", level->number, cur_map);
-
 	load_map(level_get_curr_map(level), fLoadFile);
 
 }

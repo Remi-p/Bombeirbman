@@ -61,12 +61,17 @@ void monster_debug(struct monster* monster) {
 
 	assert(monster);
 
+	printf("Monsters :\n");
+
 	while(monster != NULL) {
 
+		printf("Address:%p\n", monster);
 		printf("x:%i / y:%i / life:%i \n", monster->x, monster->y, monster->life);
 
 		monster = monster->next;
 	}
+
+	printf("\n");
 }
 
 void monster_free(struct monster* monster) {

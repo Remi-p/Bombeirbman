@@ -15,6 +15,9 @@ void   player_free(struct player* player);
 // Return sizeof(player) for the saving part
 int player_sizeof();
 
+// Display informations about the player
+void player_debug(struct player* player);
+
 // Returns the current position of the player
 int player_get_x(struct player* player);
 int player_get_y(struct player* player);
@@ -51,6 +54,9 @@ void fire_in_the_hole(struct player* player, int x, int y);
 
 // Tell if the player has the key or if he doesn't
 short player_has_key(struct player* player);
+
+// Set the next_level variable of player
+void player_set_next_lvl(struct player* player, short next_level);
 
 // Tell if we need to go to the next level
 short player_next_level(struct player* player);

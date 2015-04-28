@@ -6,7 +6,6 @@
 #include <player.h>
 #include <monster.h>
 
-// TODO : Find why it's not working with the include
 struct player;
 
 struct bomb;
@@ -26,16 +25,16 @@ int bomb_get_y(struct bomb* bomb);
 void delete_bombs(struct bomb* bomb);
 
 // Make the bomb explode
-short bomb_explode(struct bomb* previous, struct bomb* bomb, struct player* player);
+short bomb_explode(struct bomb* previous, struct bomb* bomb);
 
 // Burn for burn, wound for wound, bruise for bruise.
-short exp_fire(struct map* map, int x, int y, struct player* player, struct monster* monster);
+short exp_fire(struct map* map, int x, int y, struct player* player, struct player* player_2, struct monster* monster);
 
 // Take charge of the explosion
-void explosion(struct map* map, int x, int y, short portee, struct player* player, struct monster* monster);
+void explosion(struct map* map, int x, int y, short portee, struct player* player, struct player* player_2, struct monster* monster);
 
 // Updating the bomb in the FPS rate
-short bombs_update(struct map* map, struct bomb* bomb, struct player* player, struct monster* monster);
+short bombs_update(struct map* map, struct bomb* bomb, struct player* player, struct player* player_2, struct monster* monster);
 
 // Display one bomb on the screen
 void bomb_display(struct bomb* bomb);

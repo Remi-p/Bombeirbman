@@ -30,6 +30,19 @@ void window_display_image(SDL_Surface* sprite, int x, int y) {
 	SDL_BlitSurface(sprite, NULL, window, &place);
 }
 
+void window_display_array(int x0, int y0, int x1, int y1, SDL_Surface* sprite) {
+	assert(window);
+	assert(sprite);
+
+	for (int i = x0; i < x1 - sprite->w; i = i + sprite->w) {
+
+		for (int j = y0; j < y1 - sprite->h; j = j + sprite->h) {
+			window_display_image(sprite, i, j);
+		}
+	}
+
+}
+
 void window_clear() {
 	assert(window);
 	SDL_FillRect(window, NULL, SDL_MapRGB(window->format, 255, 255, 255));

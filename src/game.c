@@ -44,7 +44,6 @@ struct game* game_new(void) {
 	game->multiplayer = 0;
 	player_from_map(game->player, level_get_map(game->curr_level, 0), 0); // get x,y of the player on the first map
 
-
 	return game;
 }
 
@@ -79,14 +78,12 @@ void game_reset(struct game* game, short multiplayer) {
 	game->player = player_init(NB_BOMBS);
 	if (multiplayer) game->player_2 = player_init(NB_BOMBS);
 	else			 game->player_2 = NULL;
-	// TODO : Second player;
 
 	player_from_map(game->player, level_get_map(game->curr_level, 0), 0);
 	if (multiplayer) player_from_map(game->player_2, level_get_map(game->curr_level, 0), 1);
 
 	game->game_state = STATE_FIRST_MENU;
 	game->multiplayer = multiplayer;
-
 
 }
 
@@ -98,7 +95,7 @@ void save_game(struct game game) {
 	// http://stackoverflow.com/questions/13330482/reading-and-writing-a-mallocd-linked-list-from-to-a-binary-file
 
 	// Open the file for writing binary
-	FILE *fSaveFile = fopen("data/last_save.bin", "wb");
+	FILE *fSaveFile = fopen(SAVEGAME, "wb");
 
 	if (fSaveFile) {
 		// Write the structure to the file
@@ -129,7 +126,7 @@ void load_game(struct game* game) {
 	assert(game);
 
 	// Open the file for reading binary
-	FILE *fLoadFile = fopen("data/last_save.bin", "rb");
+	FILE *fLoadFile = fopen(SAVEGAME, "rb");
 
 	if (fLoadFile) {
 
@@ -420,6 +417,7 @@ void next_map(struct game* game) {
 	if (level_continu(game->curr_level)) { // This condition also change the map
 
 		player_from_map(game->player, level_get_curr_map(game->curr_level), 0);
+		//player_set_next_lvl(game->player, 0);
 	}
 	else if (count_maps(next_level_number(game->curr_level), 1, game->multiplayer)) {
 
@@ -434,17 +432,15 @@ void next_map(struct game* game) {
 		game_reset(game, game->multiplayer);
 		game->state_timer = 2 * SPLASH_SCREEN;
 		game->game_state = STATE_VICTORY;
-
 	}
 
 	player_reset(game->player);
 
 	kill_the_monsters(game->monster);
+	delete_bombs(game->bomb);
+
 	game->monster = monsters_from_map(level_get_curr_map(game->curr_level));
-
-
 	game->bomb = NULL;
-
 }
 
 int state_game_update(struct game* game) {
@@ -488,7 +484,7 @@ int state_game_update(struct game* game) {
 		}
 
 		// Updating bombs
-		if (bombs_update(level_get_curr_map(game->curr_level), game->bomb, game->player, game->monster)) {
+		if (bombs_update(level_get_curr_map(game->curr_level), game->bomb, game->player, game->player_2, game->monster)) {
 			game->bomb = NULL;
 		}
 	}
@@ -547,6 +543,9 @@ int state_menu(struct game* game) {
 	else if(game->game_state == STATE_SECOND_MENU) {
 		window_clear();
 		window_display_image(sprite_get_menu(1), 0, 0);
+
+		if (!savefile_exist || game->multiplayer) window_display_array(100, 70, 370, 123, sprite_get_menu_h());
+
 		window_refresh();
 	}
 
