@@ -2,6 +2,51 @@
 
 ## Modifications
 
+### Before 28/04/15
+
+* *data/*
+* *include/bomb.h*
+* *include/constant.h*
+* *include/game.h*
+* *include/map.h*
+* *include/player.h*
+* *include/sprite.h*
+* *include/window.h*
+* *src/level.*
+* *src/sprite.c*
+* *src/bomb.c*
+	* Support for explosion hitting one or two player(s)
+* *src/game.c*
+	* Constant for save filename
+	* Conditional menu if savefile exists
+* *src/main.c*
+	* File testin
+* *src/map.c*
+	* Map debugger (print info on map : `map_debug`)
+* *src/monster.c*
+	* Updating monster debugger
+* *src/player.c*
+	* Player debugger (`player_debug`)
+	* Optimization for two players loading
+* *src/windowc.*
+	* Support for rectangular hidding pannel
+
+### 15.04.15
+
+* *data/*
+* *include/level.h*
+* *include/map.h*
+* *include/player.h*
+* *src/game.c*
+	* Starting the multiplayer mode
+	* Keyboard input (& other functions) for second player
+* *src/level.c*
+	* Conditional level loading (for solo/multi)
+* *src/map.c*
+	* Conditional map loading
+* *src/player.c*
+	* Support for loading two players from map
+
 ### 11.04.15
 
 * *src/level.c*
