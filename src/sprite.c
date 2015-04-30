@@ -64,6 +64,11 @@
 #define PLAYER_UP       "sprite/player_up.png"
 #define PLAYER_RIGHT    "sprite/player_right.png"
 #define PLAYER_DOWN     "sprite/player_down.png"
+#define PLAYER2_LEFT     "sprite/player2_left.png"
+#define PLAYER2_UP       "sprite/player2_up.png"
+#define PLAYER2_RIGHT    "sprite/player2_right.png"
+#define PLAYER2_DOWN     "sprite/player2_down.png"
+
 
 // Sprites of game states
 #define IMG_STATE_COMPLETED "sprite/completed.png"
@@ -101,7 +106,7 @@ SDL_Surface* state_victory;
 SDL_Surface* bonus[NB_BONUS];
 
 // player
-SDL_Surface* player_img[4];
+SDL_Surface* player_img[8];
 
 void banner_load() {
 	// numbers imgs
@@ -202,10 +207,14 @@ void player_load() {
 	player_img[EAST] = load_image(PLAYER_RIGHT);
 	player_img[NORTH] = load_image(PLAYER_UP);
 	player_img[SOUTH] = load_image(PLAYER_DOWN);
+	player_img[4+WEST] = load_image(PLAYER2_LEFT);
+	player_img[4+EAST] = load_image(PLAYER2_RIGHT);
+	player_img[4+NORTH] = load_image(PLAYER2_UP);
+	player_img[4+SOUTH] = load_image(PLAYER2_DOWN);
 }
 
 void player_unload() {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 8; i++)
 		SDL_FreeSurface(player_img[i]);
 }
 

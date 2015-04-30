@@ -381,10 +381,10 @@ int player_move(struct player* player, struct map* map) {
 	return move;
 }
 
-void player_display(struct player* player) {
+void player_display(struct player* player, short multi) {
 	assert(player);
 
-	window_display_image(sprite_get_player(player->current_direction),
+	window_display_image(sprite_get_player((multi * 4) + player->current_direction),
 			player->x * SIZE_BLOC, player->y * SIZE_BLOC);
 }
 

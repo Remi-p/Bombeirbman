@@ -247,9 +247,9 @@ void game_display(struct game* game) {
 	level_display(game_get_curr_level(game));
 	bombs_display(game->bomb);
 	if (player_is_vis(game->player))
-		player_display(game->player);
+		player_display(game->player, 0);
 	if (game->player_2 != NULL && player_is_vis(game->player_2))
-		player_display(game->player_2);
+		player_display(game->player_2, 1);
 	monsters_display(game->monster);
 	display_fire(level_get_curr_map(game_get_curr_level(game)));
 
