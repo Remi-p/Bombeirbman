@@ -36,38 +36,20 @@
  <tileset firstgid="12" name="monster_up" tilewidth="40" tileheight="40">
   <image source="../sprite/monster_up.png" width="40" height="40"/>
  </tileset>
- <tileset firstgid="13" name="tmp_wood_life" tilewidth="40" tileheight="40">
-  <image source="../sprite/tmp_wood_life.png" width="40" height="40"/>
- </tileset>
- <tileset firstgid="14" name="tmp_wood_monster" tilewidth="40" tileheight="40">
-  <image source="../sprite/tmp_wood_monster.png" width="40" height="40"/>
- </tileset>
- <tileset firstgid="15" name="tmp_wood_nbinc" tilewidth="40" tileheight="40">
-  <image source="../sprite/tmp_wood_nbinc.png" width="40" height="40"/>
- </tileset>
- <tileset firstgid="16" name="tmp_wood_nbdec" tilewidth="40" tileheight="40">
-  <image source="../sprite/tmp_wood_nbdec.png" width="40" height="40"/>
- </tileset>
- <tileset firstgid="17" name="tmp_wood_rangedec" tilewidth="40" tileheight="40">
-  <image source="../sprite/tmp_wood_rangedec.png" width="40" height="40"/>
- </tileset>
- <tileset firstgid="18" name="tmp_wood_rangeinc" tilewidth="40" tileheight="40">
-  <image source="../sprite/tmp_wood_rangeinc.png" width="40" height="40"/>
- </tileset>
  <layer name="Calque de Tile 1" width="12" height="12">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,4,0,0,0,0,0,0,
-0,0,0,0,4,1,4,0,0,0,0,0,
-0,0,0,0,3,0,3,4,0,0,0,0,
-0,0,0,0,3,0,5,10,4,0,0,0,
-0,0,0,0,3,0,3,4,0,0,0,0,
-0,0,0,4,3,0,3,0,0,0,0,0,
-0,0,4,0,10,12,3,0,0,0,0,0,
-0,0,4,12,4,2,3,0,0,0,0,0,
-0,0,4,0,10,11,3,0,0,0,0,0,
-0,0,0,4,3,3,3,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0
+4,4,4,4,4,4,4,4,4,4,4,4,
+4,1,4,4,2,4,0,0,0,4,3,4,
+4,0,0,4,0,0,0,4,0,0,0,4,
+4,4,0,4,4,4,4,4,4,4,0,4,
+4,4,0,4,0,0,12,0,0,0,0,4,
+4,0,0,4,0,3,0,3,0,3,0,4,
+4,0,4,0,0,0,0,0,10,12,4,4,
+4,0,0,3,0,3,0,3,0,3,4,4,
+4,4,0,10,0,0,0,0,10,0,0,4,
+4,4,4,3,0,3,0,3,0,3,5,4,
+4,4,4,4,0,0,10,0,12,0,4,4,
+4,4,4,4,4,4,4,4,4,4,4,4
 </data>
  </layer>
 </map>

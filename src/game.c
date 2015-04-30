@@ -268,11 +268,13 @@ short menu_input_keyboard(struct game* game) {
 		case SDL_QUIT:
 			return 1;
 		case SDL_KEYDOWN:
-			switch (event.key.keysym.sym) {
-
-				//TODO : if statements not working?
-				if (game->game_state == STATE_FIRST_MENU) {
-
+		
+			if (event.key.keysym.sym == SDLK_ESCAPE)
+				return 1;
+				
+			if (game->game_state == STATE_FIRST_MENU) {
+				
+				switch (event.key.keysym.sym) {
 					case SDLK_o:
 					case SDLK_0:
 						game_reset(game, 0);
@@ -282,10 +284,14 @@ short menu_input_keyboard(struct game* game) {
 						game_reset(game, 1);
 						game->game_state = STATE_SECOND_MENU;
 						break;
+					default:
+						break;
 				}
+			}
+			
+			else if (game->game_state == STATE_SECOND_MENU) {
 
-				else if (game->game_state == STATE_SECOND_MENU) {
-
+				switch (event.key.keysym.sym) {
 					case SDLK_b:
 						game->game_state = STATE_FIRST_MENU;
 						break;
@@ -293,13 +299,19 @@ short menu_input_keyboard(struct game* game) {
 						game->game_state = STATE_GAME;
 						break;
 					case SDLK_c:
-						load_game(game);
-						game->game_state = STATE_GAME;
+						if (!game->multiplayer && savefile_exist) {
+							load_game(game);
+							game->game_state = STATE_GAME;
+						}
+						break;
+					default:
 						break;
 				}
+			}
 
-				else if (game->game_state == STATE_GAME_OVER) {
+			else if (game->game_state == STATE_GAME_OVER) {
 
+				switch (event.key.keysym.sym) {
 					case SDLK_r:
 						game->game_state = STATE_GAME;
 						break;
@@ -308,15 +320,10 @@ short menu_input_keyboard(struct game* game) {
 						break;
 					case SDLK_q:
 						return 1;
+						break;	
+					default:
 						break;
-
 				}
-
-				case SDLK_ESCAPE:
-					return 1;
-
-				default:
-					break;
 			}
 
 			break;
@@ -363,10 +370,10 @@ short game_input_keyboard(struct game* game) {
 					case SDLK_ESCAPE:
 						return 1;
 					case SDLK_F6:
-						save_game(*game);
+						if (!game->multiplayer) save_game(*game);
 						break;
 					case SDLK_F9:
-						load_game(game);
+						if (!game->multiplayer) load_game(game);
 						break;
 					case SDLK_p:
 						game->pause = 1;
@@ -390,25 +397,33 @@ short game_input_keyboard(struct game* game) {
 					case SDLK_SPACE:
 						game->bomb = create_bomb(level_get_curr_map(game->curr_level), game->bomb, game->player);
 						break;
-					// Second player
+					// Second player (Double switch ?)
 					case SDLK_z:
-						player_set_current_way(player_2, NORTH);
-						move = player_move(player_2, map);
-						break;
 					case SDLK_s:
-						player_set_current_way(player_2, SOUTH);
-						move = player_move(player_2, map);
-						break;
 					case SDLK_d:
-						player_set_current_way(player_2, EAST);
-						move = player_move(player_2, map);
-						break;
 					case SDLK_q:
-						player_set_current_way(player_2, WEST);
-						move = player_move(player_2, map);
+						if (game->multiplayer) {	
+							switch (event.key.keysym.sym) {
+								case SDLK_z:
+									player_set_current_way(player_2, NORTH);
+									break;
+								case SDLK_s:
+									player_set_current_way(player_2, SOUTH);
+									break;
+								case SDLK_d:
+									player_set_current_way(player_2, EAST);
+									break;
+								case SDLK_q:
+									player_set_current_way(player_2, WEST);
+									break;
+								default:
+									break;
+							}
+							move = player_move(player_2, map);
+						}
 						break;
 					case SDLK_w:
-						game->bomb = create_bomb(level_get_curr_map(game->curr_level), game->bomb, game->player_2);
+						if (game->multiplayer) game->bomb = create_bomb(level_get_curr_map(game->curr_level), game->bomb, game->player_2);
 						break;
 					default:
 						break;
