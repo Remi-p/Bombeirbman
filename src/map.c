@@ -287,12 +287,16 @@ void load_map(struct map* map, FILE* fLoadFile) {
 		}
 
 	}
+	
+	map_debug(map);
 
 }
 
 void save_map(struct map* map, FILE* fSaveFile) {
 	assert(map != NULL);
 	assert(map->height > 0 && map->width > 0);
+
+	map_debug(map);
 
 	unsigned char cell;
 	for (int i = 0; i < map->width; i++) {
@@ -447,30 +451,21 @@ static int case_move_aux(struct map* map, int x, int y) {
 		return 0;
 
 	switch (map_get_cell_type(map, x, y)) {
-	case CELL_SCENERY:
-		// We don't move our case
-		return 0;
-		break;
-
-	case CELL_CASE:
-		return 0;
-		break;
-
-	case CELL_BOMB:
-		return 0;
-		break;
-
+		
 	case CELL_BONUS:
 		break;
 
 	case CELL_GOAL:
 		break;
 
-	case CELL_MONSTER:
-		return 0;
-		break;
-
+	case CELL_CASE:
+	case CELL_BOMB:
 	case CELL_PLAYER:
+	case CELL_MONSTER:		
+	case CELL_DOOR:
+	case CELL_SCENERY:
+		// We don't move our case
+		return 0;
 		break;
 
 	default:

@@ -23,7 +23,7 @@ void game_default(struct game* game) {
 
 	assert(game);
 
-	game->monster = monsters_from_map(level_get_map(game->curr_level, 0));
+	game->monster = monsters_from_map(level_get_curr_map(game->curr_level));
 
 	game->bomb = NULL;
 	game->state_timer = 0;
@@ -108,7 +108,8 @@ void game_reset(struct game* game, short multiplayer) {
 }
 
 void save_game(struct game game) {
-	//assert(game);
+	
+	assert(&game);
 
 	// From :
 	// http://www.gamedev.net/topic/633653-save-and-read-data-from-file/#entry4995912

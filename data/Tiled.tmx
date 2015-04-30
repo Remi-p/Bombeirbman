@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="left-up" width="12" height="12" tilewidth="40" tileheight="40" nextobjectid="1">
+ <tileset firstgid="1" name="player" tilewidth="40" tileheight="40">
+  <image source="../sprite/player_up.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="2" name="door" tilewidth="40" tileheight="40">
+  <image source="../sprite/door.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="3" name="stone" tilewidth="40" tileheight="40">
+  <image source="../sprite/stone.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="4" name="tree" tilewidth="40" tileheight="40">
+  <image source="../sprite/tree.png" width="44" height="44"/>
+ </tileset>
+ <tileset firstgid="5" name="key" tilewidth="40" tileheight="40">
+  <image source="../sprite/key.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="6" name="bonus_bomb_nb_dec" tilewidth="40" tileheight="40">
+  <image source="../sprite/bonus_bomb_nb_dec.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="7" name="bonus_bomb_nb_inc" tilewidth="40" tileheight="40">
+  <image source="../sprite/bonus_bomb_nb_inc.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="8" name="bonus_bomb_range_dec" tilewidth="40" tileheight="40">
+  <image source="../sprite/bonus_bomb_range_dec.png" width="41" height="40"/>
+ </tileset>
+ <tileset firstgid="9" name="bonus_bomb_range_inc" tilewidth="40" tileheight="40">
+  <image source="../sprite/bonus_bomb_range_inc.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="10" name="wood_box" tilewidth="40" tileheight="40">
+  <image source="../sprite/wood_box.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="11" name="bonus_life" tilewidth="40" tileheight="40">
+  <image source="../sprite/bonus_life.png" width="40" height="40"/>
+ </tileset>
+ <tileset firstgid="12" name="monster_up" tilewidth="40" tileheight="40">
+  <image source="../sprite/monster_up.png" width="40" height="40"/>
+ </tileset>
+ <layer name="Calque de Tile 1" width="12" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,4,0,0,0,0,0,0,
+0,0,0,0,4,1,4,0,0,0,0,0,
+0,0,0,0,3,0,3,4,0,0,0,0,
+0,0,0,0,3,0,5,10,4,0,0,0,
+0,0,0,0,3,0,3,4,0,0,0,0,
+0,0,0,4,3,0,3,0,0,0,0,0,
+0,0,4,0,10,12,3,0,0,0,0,0,
+0,0,4,12,4,2,3,0,0,0,0,0,
+0,0,4,0,10,11,3,0,0,0,0,0,
+0,0,0,4,3,3,3,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

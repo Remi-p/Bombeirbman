@@ -24,7 +24,7 @@ struct level* level_get_level(int num, short multi) {
 	level->nb_maps = count_maps(num, 0, multi);
 	level->cur_map = 0;
 	// We allocate the first layer of the array
-	level->maps = malloc( (num+1) * sizeof(*level->maps) );
+	level->maps = malloc( (level->nb_maps) * sizeof(*level->maps) );
 
 	for	(int i = 0; i <= (level->nb_maps-1); i++) {
 

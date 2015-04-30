@@ -26,7 +26,7 @@
 // Number of bombs
 #define NB_BOMBS 2
 // Default range for the player
-#define PORTEE 4
+#define PORTEE 1
 // Invincibility time
 #define INVINCIBILITY 50
 // Bomb time
