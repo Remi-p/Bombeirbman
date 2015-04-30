@@ -31,19 +31,39 @@ void game_default(struct game* game) {
 
 }
 
-struct game* game_new(void) {
+void game_debug(struct game* game) {
+	
+	assert(game);
+	
+	printf("Game:\n");
+
+	printf("Address:%p\n", game);
+	printf("Level:%p / Player:%p / Player_2:%p\n", game->curr_level, game->player, game->player_2);
+	printf("Monster:%p / Bomb:%p\n", game->monster, game->bomb);
+	
+	printf("State_timer:%i / Game_state:%i\n", game->state_timer, game->game_state);
+	printf("Pause:%i / Counter:%i / Multiplayer:%i", game->pause, game->counter, game->multiplayer);
+
+	printf("\n");
+	
+}
+
+struct game* game_new() {
 	sprite_load(); // load sprites into process memory
 
 	struct game* game = malloc(sizeof(*game));
-	game->curr_level = level_get_level(1, game->multiplayer); // get maps of the first level
-
-	game_default(game);
-	game->player = player_init(NB_BOMBS);
-	game->player_2 = NULL;
-	game->game_state = STATE_FIRST_MENU;
+	
+	// Only a few things are needed before the actual start of the game
 	game->multiplayer = 0;
-	player_from_map(game->player, level_get_map(game->curr_level, 0), 0); // get x,y of the player on the first map
-
+	game->game_state = STATE_FIRST_MENU;
+	game->counter = 0;
+	
+	game->curr_level = level_get_level(1, game->multiplayer);
+	game->bomb = NULL;
+	game->monster = NULL;
+	game->player = NULL;
+	game->player_2 = NULL;
+	
 	return game;
 }
 
@@ -254,15 +274,11 @@ short menu_input_keyboard(struct game* game) {
 
 					case SDLK_o:
 					case SDLK_0:
-						if (game->multiplayer != 0) {
-							game_reset(game, 0);
-						}
+						game_reset(game, 0);
 						game->game_state = STATE_SECOND_MENU;
 						break;
 					case SDLK_t:
-						if (game->multiplayer != 1) {
-							game_reset(game, 1);
-						}
+						game_reset(game, 1);
 						game->game_state = STATE_SECOND_MENU;
 						break;
 				}
@@ -485,6 +501,7 @@ int state_game_update(struct game* game) {
 
 		// Updating bombs
 		if (bombs_update(level_get_curr_map(game->curr_level), game->bomb, game->player, game->player_2, game->monster)) {
+			free(game->bomb);
 			game->bomb = NULL;
 		}
 	}
@@ -517,9 +534,9 @@ void state_level_comp(struct game* game) {
 		if (game->state_timer > 0) {
 			game->state_timer--;
 
-			//window_clear();
-			//window_display_image(sprite_get_victory(), 0, 0);
-			//window_refresh();
+			window_clear();
+			window_display_image(sprite_get_victory(), 0, 0);
+			window_refresh();
 		}
 		else
 			game->game_state = STATE_FIRST_MENU;
@@ -577,7 +594,6 @@ int game_update(struct game* game) {
 			return state_menu(game);
 			break;
 	}
-
 
 	return 0;
 }

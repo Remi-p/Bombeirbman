@@ -48,7 +48,21 @@ struct map* map_new(int width, int height)
 		for (j = 0; j < height; j++)
 			map->grid[CELL(i,j)] = CELL_EMPTY;
 
+	map->fire = NULL;
+
 	return map;
+}
+
+void fire_debug(struct fire* fire) {
+	
+	assert(fire);
+	
+	printf("Fire:\n");
+	
+	printf("Address:%p\n", fire);
+	printf("Next:%p / Previous:%p\n", fire->next, fire->previous);
+	printf("x:%i / y:%i / time:%i\n", fire->x, fire->y, fire->time);
+	
 }
 
 void map_debug(struct map* map) {
@@ -87,6 +101,7 @@ void map_free(struct map* map)
 	if (map == NULL )
 		return;
 	free(map->grid);
+	map->grid=NULL;
 	free(map);
 }
 
@@ -153,6 +168,8 @@ void add_fire_to_map(struct map* map, int x, int y, short time) {
 
 struct fire* dec_fire(struct fire* fire) {
 
+	assert(fire);
+
 	fire->time--;
 
 	if (fire->time <= 0) {
@@ -185,13 +202,17 @@ void display_fire(struct map* map) {
 	struct fire* fire_prev = NULL;
 
 	while (fire != NULL) {
+		
+		assert(fire);
 
 		window_display_image(sprite_get_fire(fire->time%2), fire->x * SIZE_BLOC, fire->y * SIZE_BLOC);
 
 		fire_prev = fire;
 		fire = fire->next;
-		if (dec_fire(fire_prev) == NULL)
+		
+		if (dec_fire(fire_prev) == NULL) {
 			map->fire = NULL;
+		}
 	}
 
 }

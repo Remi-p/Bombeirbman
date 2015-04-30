@@ -289,6 +289,11 @@ struct monster* kill_monster(struct map* map, struct monster* monster) {
 
 void kill_the_monsters(struct monster* monster) {
 
+	// We need to support the fact that there are no monsters
+	if (monster == NULL) return;
+	
+	assert(monster);
+
 	while(monster->next != NULL) {
 
 		monster = monster->next;

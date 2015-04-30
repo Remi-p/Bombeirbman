@@ -158,7 +158,7 @@ void map_unload() {
 
 void state_load() {
 	completed = load_image(IMG_STATE_COMPLETED);
-//	state_victory = load_image(IMG_STATE_VICTORY);
+	state_victory = load_image(IMG_STATE_VICTORY);
 	menu[0] = load_image(IMG_MENU_1);
 	menu[1] = load_image(IMG_MENU_2);
 	menu[2] = load_image(IMG_GAME_OVER);
@@ -270,11 +270,10 @@ SDL_Surface* sprite_get_completed() {
 	return completed;
 }
 
-/*
 SDL_Surface* sprite_get_victory() {
-	assert(victory);
-	return victory;
-}*/
+	assert(state_victory);
+	return state_victory;
+}
 
 SDL_Surface* sprite_get_monster(enum direction direction) {
 	assert(monster_img[direction]);
