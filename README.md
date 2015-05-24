@@ -2,6 +2,33 @@
 
 ## Modifications
 
+### 24/05/15
+
+* *include/level.h*
+* *include/map.h*
+* *include/sprite.h*
+* *src/level.c*
+* *src/player.c*
+* *src/sprite.c*
+* *src/map.c*
+	* Modifying a door into a princess
+* *src/game.c*
+	* Displaying a princess if the map is final
+
+### 30/04/15
+
+(various bugs correction)
+
+* *data/*
+* *src/level.c*
+* *src/monster.c*
+* *src/sprite.c*
+* *include/constant.h*
+* *src/game.c*
+	* Game debugger
+* *src/map.c*
+	* Fire debugger
+
 ### Before 28/04/15
 
 * *data/*

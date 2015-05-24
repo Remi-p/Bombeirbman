@@ -513,12 +513,24 @@ int state_game_update(struct game* game) {
 
 		// Updating player (and displaying 'game over' if needed)
 		if (player_update(level_get_curr_map(game->curr_level), game->player)) {
-			game_reset(game, game->multiplayer);
-			game->game_state = STATE_GAME_OVER;
+			if (game->multiplayer) {
+				game->state_timer = 2 * SPLASH_SCREEN;
+				game->game_state = STATE_VICTORY;
+				return 0;
+			}
+			else {
+				game_reset(game, game->multiplayer);
+				game->game_state = STATE_GAME_OVER;
+				return 0;
+			}
 		}
 
 		if (game->multiplayer && game->player_2 != NULL) {
-			player_update(level_get_curr_map(game->curr_level), game->player_2);
+			if (player_update(level_get_curr_map(game->curr_level), game->player_2)) {
+				game->state_timer = 2 * SPLASH_SCREEN;
+				game->game_state = STATE_VICTORY;
+				return 0;
+			}
 		}
 
 		// Updating bombs
@@ -558,10 +570,24 @@ void state_level_comp(struct game* game) {
 
 			window_clear();
 			window_display_image(sprite_get_victory(), 0, 0);
+			
+			// On multiplayer mode, we display the winner
+			if (game->multiplayer) {
+				if (!player_get_life(game->player))
+					window_display_image(sprite_get_player((1 * 4)+1),
+							3 * SIZE_BLOC, 10 * SIZE_BLOC);
+				else
+					window_display_image(sprite_get_player((0 * 4)+1),
+							3 * SIZE_BLOC, 10 * SIZE_BLOC);
+			}
+			
 			window_refresh();
 		}
-		else
+		else {
+			
+			
 			game->game_state = STATE_FIRST_MENU;
+		}
 	}
 
 }
