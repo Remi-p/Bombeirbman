@@ -128,6 +128,20 @@ enum bonus_type map_get_bonus_type(struct map* map, int x, int y) {
 	return (map->grid[CELL(x,y)] >> 4) & 0x0f;
 }
 
+void map_set_door_as_princess(struct map* map) {
+	assert(map);
+	
+	int i, j;
+	for (i = 0; i < map_get_width(map); i++) {
+		for (j = 0; j < map_get_height(map); j++) {
+			if (map_get_cell_type(map, i, j) == CELL_CLOSED_DOOR) {
+				map_set_cell_type(map, i, j, CELL_GOAL);
+				return;
+			}
+		}
+	}
+}
+
 void map_set_compose_type(struct map* map, int x, int y, enum cell_type type, enum bonus_type bonus) {
 	assert(map && map_is_inside(map, x, y));
 	map->grid[CELL(x,y)] = type | (bonus << 4);
@@ -343,6 +357,9 @@ void map_display(struct map* map)
 				break;
 			case CELL_CLOSED_DOOR:
 				window_display_image(sprite_get_closed_door(), x, y);
+				break;
+			case CELL_GOAL:
+				window_display_image(sprite_get_princess(), x, y);
 				break;
 			case CELL_MONSTER:
 				//window_display_image(sprite_get_monster(SOUTH), x, y);

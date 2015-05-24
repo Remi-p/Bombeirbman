@@ -68,6 +68,9 @@ enum cell_type map_get_cell_type(struct map* map, int x, int y);
 // Return the type of a bonus
 enum bonus_type map_get_bonus_type(struct map* map, int x, int y);
 
+// For the last level, the door becomes a princess
+void map_set_door_as_princess(struct map* map);
+
 // Same as map_set_cell_type, but with the 4 first bits.
 void map_set_compose_type(struct map* map, int x, int y, enum cell_type type, enum bonus_type bonus);
 

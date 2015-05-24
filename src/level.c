@@ -120,6 +120,10 @@ short count_maps(int level, int map, short multi) {
 
 }
 
+int level_get_curr_map_nb(struct level* level) {
+	return level->cur_map;
+}
+
 struct map* level_get_curr_map(struct level* level) {
 	return level->maps[level->cur_map];
 }

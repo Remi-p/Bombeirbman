@@ -289,9 +289,6 @@ static int player_move_aux(struct player* player, struct map* map, int x, int y)
 
 			break;
 
-		case CELL_GOAL:
-			break;
-
 		case CELL_MONSTER:
 			// When the player can't die, we're not letting him going through monsters
 			if (player->invincibility > 0)
@@ -301,6 +298,7 @@ static int player_move_aux(struct player* player, struct map* map, int x, int y)
 		case CELL_PLAYER:
 			break;
 
+		case CELL_BOMB:
 		case CELL_CLOSED_DOOR:
 			return 0;
 			break;
@@ -312,12 +310,9 @@ static int player_move_aux(struct player* player, struct map* map, int x, int y)
 			map_open_door(map);
 			break;
 
+		case CELL_GOAL:
 		case CELL_DOOR:
 			player->next_level = 1;
-			break;
-
-		case CELL_BOMB:
-			return 0;
 			break;
 
 		case CELL_BONUS:

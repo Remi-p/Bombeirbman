@@ -69,6 +69,8 @@
 #define PLAYER2_RIGHT    "sprite/player2_right.png"
 #define PLAYER2_DOWN     "sprite/player2_down.png"
 
+// "Goal"
+#define PRINCESS	"sprite/bomberwoman.png"
 
 // Sprites of game states
 #define IMG_STATE_COMPLETED "sprite/completed.png"
@@ -107,6 +109,7 @@ SDL_Surface* bonus[NB_BONUS];
 
 // player
 SDL_Surface* player_img[8];
+SDL_Surface* princess;
 
 void banner_load() {
 	// numbers imgs
@@ -218,6 +221,14 @@ void player_unload() {
 		SDL_FreeSurface(player_img[i]);
 }
 
+void princess_load() {
+	princess = load_image(PRINCESS);
+}
+
+void princess_unload() {
+	SDL_FreeSurface(princess);
+}
+
 void monster_load() {
 	monster_img[WEST] = load_image(MNST_LEFT);
 	monster_img[EAST] = load_image(MNST_RIGHT);
@@ -251,6 +262,7 @@ void sprite_load() {
 	bomb_load();
 	fire_load();
 	state_load();
+	princess_load();
 }
 
 void sprite_free() {
@@ -262,6 +274,7 @@ void sprite_free() {
 	bomb_unload();
 	fire_unload();
 	state_unload();
+	princess_unload();
 }
 
 SDL_Surface* sprite_get_number(short number) {
@@ -351,6 +364,11 @@ SDL_Surface* sprite_get_key() {
 SDL_Surface* sprite_get_stone() {
 	assert(stone);
 	return stone;
+}
+
+SDL_Surface* sprite_get_princess() {
+	assert(princess);
+	return princess;
 }
 
 SDL_Surface* sprite_get_door() {

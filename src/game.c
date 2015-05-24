@@ -450,6 +450,12 @@ void next_map(struct game* game) {
 
 		player_from_map(game->player, level_get_curr_map(game->curr_level), 0);
 		//player_set_next_lvl(game->player, 0);
+		
+		// Are we on the final map ?
+		if (!count_maps(next_level_number(game->curr_level), level_get_curr_map_nb(game->curr_level)+1, game->multiplayer)
+		&& !count_maps(next_level_number(game->curr_level), 1, game->multiplayer)) {
+			map_set_door_as_princess(level_get_curr_map(game->curr_level));
+		}
 	}
 	else if (count_maps(next_level_number(game->curr_level), 1, game->multiplayer)) {
 
