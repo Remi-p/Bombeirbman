@@ -26,12 +26,12 @@ Rémi Perrot - T1-G2 - 2015
 * `bombs_update` décrémente le timer des bombs, enregistre le temps restant des bombs dans la carte (pour la sauvegarde), lance les explosions
 * `explosion` crée des explosions en croix, en appellant la fonction `exp_fire`, qui s'arrête si elle rencontre un obstacle
 	* la fonction `exp_fire` permet également de gérer la destruction de caisse, de monstre (`kill_the_monster_here`) et la décrémentation de vie du joueur (`fire_in_the_hole`)
-* `bomb_explode` supprime la bombe en '/raccordant/' la liste des bombes restantes, et crée le feu de l'explosion avec
+* `bomb_explode` supprime la bombe en '**raccordant**' la liste des bombes restantes, et crée le feu de l'explosion avec
 
 ## Gestion des vies
 
 * La foncion `player_dec_life`(/`player_inc_life`) permet de décrémenter(/incrémenter) la vie du joueur
-* Dans `player_update`, appelé depuis `game.c`, si la vie du joueur est inférieur à 1, le jeu s'arrête (depuis /game.c/)
+* Dans `player_update`, appelé depuis `game.c`, si la vie du joueur est inférieur à 1, le jeu s'arrête (depuis **game.c**)
 
 ## Panneau d'informations
 
@@ -54,7 +54,7 @@ Rémi Perrot - T1-G2 - 2015
 
 ## Sauvegarde / Chargement partie
 
-* `load_game` et `save_game` de /game.c/ s'occupe de charger et d'enregistrer un fichier suite à l'appuie sur F9 / F6 (sauvegarde)
+* `load_game` et `save_game` de **game.c** s'occupe de charger et d'enregistrer un fichier suite à l'appuie sur F9 / F6 (sauvegarde)
 	* Les données sont directement sauvegardées en binaire
 	* Par une suite d'appel de fonction, level.c et map.c prennent part au chargement
 	* `load_map` notamment parcourt toutes les cellules pour renvoyer une carte
@@ -67,4 +67,5 @@ Rémi Perrot - T1-G2 - 2015
 * Sprite non-originel
 * Animation for the fires
 * Plusieurs debuggeurs
+* Création de cartes via le logiciel *Tiled* et conversion par formulaire php
 * ...
