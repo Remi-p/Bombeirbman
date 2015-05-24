@@ -4,6 +4,7 @@
 
 ### 24/05/15
 
+* *data/*
 * *include/level.h*
 * *include/map.h*
 * *include/sprite.h*
@@ -14,6 +15,7 @@
 	* Modifying a door into a princess
 * *src/game.c*
 	* Displaying a princess if the map is final
+	* Displaying the winner in mini-multiplayer mode
 
 ### 30/04/15
 
