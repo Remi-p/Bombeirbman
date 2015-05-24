@@ -27,7 +27,6 @@ struct monster* monster_init(int x, int y, struct monster* next, short rand) {
 	monster->x = x;
 	monster->y = y;
 
-	// TODO : Constante ?
 	monster->life = 1;
 
 	// The generation of the random first position is made outside this function
