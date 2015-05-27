@@ -368,7 +368,8 @@ short game_input_keyboard(struct game* game) {
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 					case SDLK_ESCAPE:
-						return 1;
+						game->game_state = STATE_FIRST_MENU;
+						return 0;
 					case SDLK_F6:
 						if (!game->multiplayer) save_game(*game);
 						break;
